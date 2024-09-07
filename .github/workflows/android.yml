@@ -1,0 +1,45 @@
+name: Build App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Release new apk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Flutter app version
+        id: get_version
+        run: |
+          version=$(grep '^version:' pubspec.yaml | cut -d ' ' -f 2)
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "::set-output name=version::$version"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Flutter app
+        run: flutter build apk --release
+
+      - name: Push to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/apk/release/*"
+          tag: v${{ steps.get_version.outputs.version }}
+          token: ${{ secrets.TOKEN }}
