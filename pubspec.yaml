@@ -38,6 +38,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   flutter_localizations:
     sdk: flutter
+  supabase_flutter: ^2.6.0
 
 dev_dependencies:
   flutter_test:

@@ -13,7 +13,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state == AuthState.authenticated) {
+        if (state == AuthState.authenticated || state == AuthState.anonymous) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => BlocProvider(

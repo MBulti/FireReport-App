@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pages/pages.dart';
 import 'cubit/cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
+Future<void> main() async {
+    await Supabase.initialize(
+    url: "https://gtjwpkqnehchegvxesva.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0andwa3FuZWhjaGVndnhlc3ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1Mzg0OTYsImV4cCI6MjAzOTExNDQ5Nn0.7ZAHS7OOwcJy3ooTwhMVKhgbih6bLYvSvQ44A8-vC3M"
+  );
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(create: (_) => SettingsCubit()),
-      BlocProvider(create: (context)  => AuthCubit()..checkLoginStatus()),
+      BlocProvider(create: (_)  => AuthCubit()..checkLoginStatus()),
     ],
     child: const MyApp(),
   ));

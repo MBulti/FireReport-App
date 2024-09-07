@@ -1,30 +1,48 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-enum AuthState { splash, authenticated, unauthenticated }
+enum AuthState { splash, authenticated, anonymous, unauthenticated }
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthState.splash);
 
   void checkLoginStatus() async {
     await Future.delayed(const Duration(seconds: 2));
-    bool isLoggedIn = true;
 
-    if (isLoggedIn) {
+    if (Supabase.instance.client.auth.currentSession != null) {
       emit(AuthState.authenticated); // Benutzer ist eingeloggt
     } else {
       emit(AuthState.unauthenticated); // Benutzer ist nicht eingeloggt
     }
   }
 
-  void login(String userName, String password) {
-    emit(AuthState.authenticated);
+  Future<void> login(String userName, String password) async {
+    try {
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: userName,
+        password: password,
+      );
+      emit(AuthState.authenticated);
+    } on AuthException catch (e) {
+      print(e.message);
+    }
   }
 
-  void guestLogin() {
-    emit(AuthState.authenticated);
+  Future<void> guestLogin() async {
+    try {
+      await Supabase.instance.client.auth.signInAnonymously();
+      emit(AuthState.anonymous);
+    } on AuthException catch (e) {
+      print(e.message);
+    }
   }
 
   void logout() {
-    emit(AuthState.unauthenticated);
+    try {
+      Supabase.instance.client.auth.signOut();
+      emit(AuthState.unauthenticated);
+    } on AuthException catch (e) {
+      print(e.message);
+    }
   }
 }
