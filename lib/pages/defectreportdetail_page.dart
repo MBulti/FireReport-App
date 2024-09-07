@@ -16,6 +16,7 @@ class DefectReportDetailPage extends StatefulWidget {
 class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
   final formKey = GlobalKey<FormState>();
 
+  late int id;
   late String title;
   late String description;
   late ReportState status;
@@ -25,11 +26,13 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
   void initState() {
     super.initState();
     if (widget.report != null) {
+      id = widget.report!.id;
       title = widget.report!.title;
       description = widget.report!.description;
       status = widget.report!.status;
       dueDate = widget.report!.dueDate;
     } else {
+      id = DateTime.now().millisecondsSinceEpoch;
       title = "";
       description = "";
       status = ReportState.open;
@@ -117,6 +120,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                     }
                     formKey.currentState!.save();
                     final newReport = DefectReport(
+                      id: id,
                       title: title,
                       description: description,
                       status: status,

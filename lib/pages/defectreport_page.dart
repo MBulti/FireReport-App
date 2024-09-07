@@ -12,7 +12,7 @@ class DefectReportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Text('Aktuelle Mängelberichte'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -33,7 +33,6 @@ class DefectReportPage extends StatelessWidget {
               BlocSelector<DefectReportCubit, DefectReportState, FilterStatus>(
             selector: (state) => state.filterStatus,
             builder: (context, state) {
-              print("Rebuild combobox");
               return DropdownButtonFormField<FilterStatus>(
                 value: state,
                 items: FilterStatus.values.map((status) {
@@ -51,12 +50,9 @@ class DefectReportPage extends StatelessWidget {
             },
           ),
         ),
-
         // list
         Expanded(
-          child: BlocSelector<DefectReportCubit, DefectReportState,
-              List<DefectReport>>(
-            selector: (state) => state.defectReports,
+          child: BlocBuilder<DefectReportCubit, DefectReportState>(
             builder: (context, state) {
               var lsReports = context.read<DefectReportCubit>().filteredReports;
               return ListView.builder(
@@ -72,7 +68,7 @@ class DefectReportPage extends StatelessWidget {
                               index: index,
                               onSave: (report) => context
                                   .read<DefectReportCubit>()
-                                  .updateReport(index, report),
+                                  .updateReport(report),
                             ),
                           ),
                         );

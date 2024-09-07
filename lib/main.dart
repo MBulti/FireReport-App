@@ -5,12 +5,13 @@ import 'cubit/cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
-  runApp(
-    BlocProvider(
-      create: (_) => SettingsCubit(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (_) => SettingsCubit()),
+      BlocProvider(create: (context)  => AuthCubit()..checkLoginStatus()),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -29,9 +30,7 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
           ],
-          home: BlocProvider(
-              create: (context) => DefectReportCubit(),
-              child: const DefectReportPage()));
+          home: LoginPage());
     });
   }
 }

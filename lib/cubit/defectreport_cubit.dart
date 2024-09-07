@@ -42,8 +42,10 @@ class DefectReportCubit extends Cubit<DefectReportState> {
     emit(state.copyWith(newDefectReport: updatedReports));
   }
 
-  void updateReport(int index, DefectReport report) {
+  void updateReport(DefectReport report) {
     final updatedReports = List<DefectReport>.from(state.defectReports);
+
+    final index = updatedReports.indexWhere((element) => element.id == report.id);
     updatedReports[index] = report;
     emit(state.copyWith(newDefectReport: updatedReports));
   }
