@@ -99,7 +99,7 @@ class DefectReportPage extends StatelessWidget {
           ),
         ),
       ]),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: context.read<AuthCubit>().isAnonymousUser ? null : FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
             context,

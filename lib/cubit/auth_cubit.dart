@@ -6,11 +6,19 @@ enum AuthState { splash, authenticated, anonymous, unauthenticated }
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthState.splash);
 
+  bool get isAnonymousUser {
+    return state == AuthState.anonymous;
+  }
+
   void checkLoginStatus() async {
     await Future.delayed(const Duration(seconds: 2));
 
     if (Supabase.instance.client.auth.currentSession != null) {
-      emit(AuthState.authenticated); // Benutzer ist eingeloggt
+      if (Supabase.instance.client.auth.currentUser!.isAnonymous) {
+        emit(AuthState.anonymous);
+      } else {
+        emit(AuthState.authenticated);
+      }
     } else {
       emit(AuthState.unauthenticated); // Benutzer ist nicht eingeloggt
     }

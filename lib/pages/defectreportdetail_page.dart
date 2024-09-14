@@ -1,6 +1,8 @@
+import 'package:firereport/cubit/cubit.dart';
 import 'package:firereport/models/models.dart';
 import 'package:firereport/utils/formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DefectReportDetailPage extends StatefulWidget {
   const DefectReportDetailPage(
@@ -51,6 +53,22 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
         dueDate = selectedDate;
       });
     }
+  }
+
+  Future<void> save() async {
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+    formKey.currentState!.save();
+    final newReport = DefectReport(
+      id: id,
+      title: title,
+      description: description,
+      status: status,
+      dueDate: dueDate,
+    );
+    widget.onSave(newReport);
+    Navigator.of(context).pop(newReport);
   }
 
   @override
@@ -114,21 +132,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                  onPressed: () {
-                    if (!formKey.currentState!.validate()) {
-                      return;
-                    }
-                    formKey.currentState!.save();
-                    final newReport = DefectReport(
-                      id: id,
-                      title: title,
-                      description: description,
-                      status: status,
-                      dueDate: dueDate,
-                    );
-                    widget.onSave(newReport);
-                    Navigator.of(context).pop(newReport);
-                  },
+                  onPressed: context.read<AuthCubit>().isAnonymousUser ? null : save,
                   child: Text(
                       widget.index == null ? 'Hinzufügen' : 'Aktualisieren')),
             ],
