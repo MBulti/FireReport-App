@@ -14,4 +14,24 @@ class DefectReport {
     required this.status,
     this.dueDate,
   });
+
+  factory DefectReport.fromJson(Map<String, dynamic> json) {
+    return DefectReport(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      status: json['status'] != null ? ReportState.values[json['status']] : ReportState.open,
+      dueDate: json['dt_due'] != null ? DateTime.parse(json['dt_due']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'status': status.index,
+      'dt_due': dueDate?.toIso8601String(),
+    };
+  }
 }

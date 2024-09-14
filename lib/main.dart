@@ -6,14 +6,15 @@ import 'cubit/cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
-    await Supabase.initialize(
-    url: "https://gtjwpkqnehchegvxesva.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0andwa3FuZWhjaGVndnhlc3ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1Mzg0OTYsImV4cCI6MjAzOTExNDQ5Nn0.7ZAHS7OOwcJy3ooTwhMVKhgbih6bLYvSvQ44A8-vC3M"
-  );
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+      url: "https://gtjwpkqnehchegvxesva.supabase.co",
+      anonKey:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0andwa3FuZWhjaGVndnhlc3ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1Mzg0OTYsImV4cCI6MjAzOTExNDQ5Nn0.7ZAHS7OOwcJy3ooTwhMVKhgbih6bLYvSvQ44A8-vC3M");
   runApp(MultiBlocProvider(
     providers: [
-      BlocProvider(create: (_) => SettingsCubit()),
-      BlocProvider(create: (_)  => AuthCubit()..checkLoginStatus()),
+      BlocProvider(create: (_) => SettingsCubit(ThemeMode.light)),
+      BlocProvider(create: (_) => AuthCubit()..checkLoginStatus()),
     ],
     child: const MyApp(),
   ));
@@ -22,7 +23,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, ThemeMode>(builder: (context, thememode) {

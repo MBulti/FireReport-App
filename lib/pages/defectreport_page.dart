@@ -29,9 +29,13 @@ class DefectReportPage extends StatelessWidget {
         // dropdown
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child:
-              BlocSelector<DefectReportCubit, DefectReportState, FilterStatus>(
-            selector: (state) => state.filterStatus,
+          child: BlocSelector<DefectReportCubit, DefectReportState, FilterStatus>(
+            selector: (state) {
+              if (state is DefectReportLoaded) {
+                return state.filterStatus;
+              }
+              return FilterStatus.all;
+            },
             builder: (context, state) {
               return DropdownButtonFormField<FilterStatus>(
                 value: state,
@@ -40,42 +44,57 @@ class DefectReportPage extends StatelessWidget {
                       value: status, child: Text(formatFilterState(status)));
                 }).toList(),
                 onChanged: (newValue) {
-                  context.read<DefectReportCubit>().filterReports(newValue!);
+                  context.read<DefectReportCubit>().setFilter(newValue!);
                 },
                 decoration: const InputDecoration(
                   labelText: 'Nach Status filtern',
                   border: OutlineInputBorder(),
                 ),
               );
-            },
+            }
           ),
         ),
         // list
         Expanded(
           child: BlocBuilder<DefectReportCubit, DefectReportState>(
             builder: (context, state) {
-              var lsReports = context.read<DefectReportCubit>().filteredReports;
-              return ListView.builder(
-                itemCount: lsReports.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DefectReportDetailPage(
-                              report: lsReports[index],
-                              index: index,
-                              onSave: (report) => context
-                                  .read<DefectReportCubit>()
-                                  .updateReport(report),
-                            ),
-                          ),
-                        );
-                      },
-                      child: DefectReportListItem(report: lsReports[index]));
-                },
-              );
+              if (state is DefectReportLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is DefectReportError) {
+                return Center(child: Text(state.message));
+              } else if (state is DefectReportLoaded) {
+                var lsReports = context.read<DefectReportCubit>().filteredReports;
+
+                lsReports.sort((a,b) => b.id.compareTo(a.id));
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await context.read<DefectReportCubit>().fetchReports();
+                  },
+                  child: ListView.builder(
+                    itemCount: lsReports.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DefectReportDetailPage(
+                                  report: lsReports[index],
+                                  index: index,
+                                  onSave: (report) => context
+                                      .read<DefectReportCubit>()
+                                      .updateReport(report),
+                                ),
+                              ),
+                            );
+                          },
+                          child: DefectReportListItem(report: lsReports[index]));
+                    },
+                  ),
+                );
+              } else {
+                return Container();
+              }
             },
           ),
         ),

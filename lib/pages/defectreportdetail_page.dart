@@ -74,7 +74,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                   title = value!;
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.trim().isEmpty) {
                     return 'Bitte einen Titel eingeben';
                   }
                   return null;
@@ -87,7 +87,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                   description = value!;
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.trim().isEmpty) {
                     return 'Bitte eine Beschreibung eingeben';
                   }
                   return null;
