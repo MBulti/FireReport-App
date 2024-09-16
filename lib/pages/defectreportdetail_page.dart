@@ -6,8 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DefectReportDetailPage extends StatefulWidget {
   const DefectReportDetailPage(
-      {super.key, this.report, this.index, required this.onSave});
+      {super.key, this.report, this.index, required this.lsUsers, required this.onSave});
   final DefectReport? report;
+  final List<AppUser> lsUsers;
   final int? index;
   final void Function(DefectReport) onSave;
 
@@ -66,6 +67,8 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userItems = [AppUser(id: null, firstName: "Kein Benutzer", lastName: ""), ...widget.lsUsers];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.index == null
@@ -103,6 +106,9 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                   }
                   return null;
                 },
+                maxLines: 5,
+                minLines: 3,
+                keyboardType: TextInputType.multiline,
               ),
               DropdownButtonFormField(
                 value: report.status,
@@ -113,6 +119,18 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                 }).toList(),
                 onChanged: (newValue) {
                   report.status = newValue!;
+                },
+              ),
+              const SizedBox(height: 10),
+              DropdownButtonFormField(
+                value: userItems.where((user) => user.id == report.assignedUser).firstOrNull,
+                decoration: const InputDecoration(labelText: "Zugewiesener Benutzer"),
+                items: userItems.map((user) {
+                  return DropdownMenuItem(
+                      value: user, child: Text('${user.firstName} ${user.lastName}'));
+                }).toList(),
+                onChanged: (newValue) {
+                  report.assignedUser = newValue!.id;
                 },
               ),
               const SizedBox(height: 10),

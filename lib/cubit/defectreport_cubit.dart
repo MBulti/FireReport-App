@@ -10,15 +10,18 @@ class DefectReportLoading extends DefectReportState {}
 class DefectReportLoaded extends DefectReportState {
   final FilterStatus filterStatus;
   final List<DefectReport> defectReports;
-  DefectReportLoaded(this.defectReports, this.filterStatus);
+  final List<AppUser> users;
+  DefectReportLoaded(this.defectReports, this.filterStatus, this.users);
 
   DefectReportLoaded copyWith({
     List<DefectReport>? newDefectReport,
     FilterStatus? newFilterStatus,
+    List<AppUser>? newUsers,
   }) {
     return DefectReportLoaded(
       newDefectReport ?? defectReports,
       newFilterStatus ?? filterStatus,
+      newUsers ?? users,
     );
   }
 }
@@ -38,7 +41,8 @@ class DefectReportCubit extends Cubit<DefectReportState> {
       emit(DefectReportLoading());
       await Future.delayed(const Duration(seconds: 2));
       final lsReports = await APIClient.getDefectReports();
-      emit(DefectReportLoaded(lsReports, filterStatus));
+      final lsUsers = await APIClient.getUsers();
+      emit(DefectReportLoaded(lsReports, filterStatus, lsUsers));
     } catch (e) {
       emit(DefectReportError(e.toString()));
     }

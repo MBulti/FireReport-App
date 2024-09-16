@@ -1,5 +1,5 @@
 class AppUser {
-  String id;
+  String? id;
   String firstName;
   String lastName;
   String? email;
