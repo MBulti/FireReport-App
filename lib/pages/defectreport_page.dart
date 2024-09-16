@@ -1,5 +1,6 @@
 import 'package:firereport/pages/pages.dart';
 import 'package:firereport/utils/formatter.dart';
+import 'package:firereport/utils/helper_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firereport/models/models.dart';
@@ -29,30 +30,29 @@ class DefectReportPage extends StatelessWidget {
         // dropdown
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BlocSelector<DefectReportCubit, DefectReportState, FilterStatus>(
-            selector: (state) {
-              if (state is DefectReportLoaded) {
-                return state.filterStatus;
-              }
-              return FilterStatus.all;
-            },
-            builder: (context, state) {
-              return DropdownButtonFormField<FilterStatus>(
-                value: state,
-                items: FilterStatus.values.map((status) {
-                  return DropdownMenuItem(
-                      value: status, child: Text(formatFilterState(status)));
-                }).toList(),
-                onChanged: (newValue) {
-                  context.read<DefectReportCubit>().setFilter(newValue!);
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Nach Status filtern',
-                  border: OutlineInputBorder(),
-                ),
-              );
+          child:
+              BlocSelector<DefectReportCubit, DefectReportState, FilterStatus>(
+                  selector: (state) {
+            if (state is DefectReportLoaded) {
+              return state.filterStatus;
             }
-          ),
+            return FilterStatus.all;
+          }, builder: (context, state) {
+            return DropdownButtonFormField<FilterStatus>(
+              value: state,
+              items: FilterStatus.values.map((status) {
+                return DropdownMenuItem(
+                    value: status, child: Text(formatFilterState(status)));
+              }).toList(),
+              onChanged: (newValue) {
+                context.read<DefectReportCubit>().setFilter(newValue!);
+              },
+              decoration: const InputDecoration(
+                labelText: 'Nach Status filtern',
+                border: OutlineInputBorder(),
+              ),
+            );
+          }),
         ),
         // list
         Expanded(
@@ -63,9 +63,19 @@ class DefectReportPage extends StatelessWidget {
               } else if (state is DefectReportError) {
                 return Center(child: Text(state.message));
               } else if (state is DefectReportLoaded) {
-                var lsReports = context.read<DefectReportCubit>().filteredReports;
+                var lsReports =
+                    context.read<DefectReportCubit>().filteredReports;
+                //lsReports.sort((a, b) => b.id.compareTo(a.id));
 
-                lsReports.sort((a,b) => b.id.compareTo(a.id));
+                lsReports.sort((a, b) {
+                  int statusComparison = a.status.compareToEnum(b.status);
+                  if (statusComparison != 0) {
+                    return statusComparison;
+                  } else {
+                    return a.dueDate.compareNullableTo(b.dueDate);
+                  }
+                });
+
                 return RefreshIndicator(
                   onRefresh: () async {
                     await context.read<DefectReportCubit>().fetchReports();
@@ -88,7 +98,8 @@ class DefectReportPage extends StatelessWidget {
                               ),
                             );
                           },
-                          child: DefectReportListItem(report: lsReports[index]));
+                          child:
+                              DefectReportListItem(report: lsReports[index]));
                     },
                   ),
                 );
@@ -99,20 +110,22 @@ class DefectReportPage extends StatelessWidget {
           ),
         ),
       ]),
-      floatingActionButton: context.read<AuthCubit>().isAnonymousUser ? null : FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DefectReportDetailPage(
-                onSave: (report) =>
-                    context.read<DefectReportCubit>().addReport(report),
-              ),
+      floatingActionButton: context.read<AuthCubit>().isAnonymousUser
+          ? null
+          : FloatingActionButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DefectReportDetailPage(
+                      onSave: (report) =>
+                          context.read<DefectReportCubit>().addReport(report),
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
             ),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

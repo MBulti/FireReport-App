@@ -5,6 +5,7 @@ class DefectReport {
   String title;
   String description;
   ReportState status;
+  String? assignedUser;
   DateTime? dueDate;
 
   DefectReport({
@@ -12,6 +13,7 @@ class DefectReport {
     required this.title,
     required this.description,
     required this.status,
+    this.assignedUser,
     this.dueDate,
   });
 
@@ -21,6 +23,7 @@ class DefectReport {
       title: json['title'],
       description: json['description'],
       status: json['status'] != null ? ReportState.values[json['status']] : ReportState.open,
+      assignedUser: json['assigned_user'],
       dueDate: json['dt_due'] != null ? DateTime.parse(json['dt_due']) : null,
     );
   }
@@ -32,6 +35,7 @@ class DefectReport {
       'description': description,
       'status': status.index,
       'dt_due': dueDate?.toIso8601String(),
+      'assigned_user': assignedUser
     };
   }
 }

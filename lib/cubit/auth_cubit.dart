@@ -1,7 +1,9 @@
+import 'package:firereport/models/models.dart';
+import 'package:firereport/utils/api_client.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-enum AuthState { splash, authenticated, anonymous, unauthenticated }
+enum AuthState { splash, loading, authenticated, anonymous, unauthenticated, error }
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthState.splash);
@@ -10,47 +12,51 @@ class AuthCubit extends Cubit<AuthState> {
     return state == AuthState.anonymous;
   }
 
-  void checkLoginStatus() async {
+  AppUser get user {
+    return APIClient.currentUser ?? AppUser(id: "", firstName: "Gast", lastName: "");
+  }
+
+  Future<void> checkLoginStatus() async {
     await Future.delayed(const Duration(seconds: 2));
 
     if (Supabase.instance.client.auth.currentSession != null) {
-      if (Supabase.instance.client.auth.currentUser!.isAnonymous) {
+      if (Supabase.instance.client.auth.currentSession!.user.isAnonymous) {
         emit(AuthState.anonymous);
       } else {
+        APIClient.setCurrentUser(Supabase.instance.client.auth.currentUser!);
         emit(AuthState.authenticated);
       }
     } else {
-      emit(AuthState.unauthenticated); // Benutzer ist nicht eingeloggt
+      emit(AuthState.unauthenticated);
     }
   }
 
   Future<void> login(String userName, String password) async {
     try {
-      await Supabase.instance.client.auth.signInWithPassword(
-        email: userName,
-        password: password,
-      );
+      emit(AuthState.loading);
+      await APIClient.login(userName, password);
       emit(AuthState.authenticated);
     } on AuthException catch (e) {
-      print(e.message);
+      emit(AuthState.error);
     }
   }
 
   Future<void> guestLogin() async {
     try {
-      await Supabase.instance.client.auth.signInAnonymously();
+      emit(AuthState.loading);
+      await APIClient.loginAnonymously();
       emit(AuthState.anonymous);
     } on AuthException catch (e) {
-      print(e.message);
+      emit(AuthState.error);
     }
   }
 
-  void logout() {
+  Future<void> logout() async {
     try {
-      Supabase.instance.client.auth.signOut();
+      await APIClient.logout();
       emit(AuthState.unauthenticated);
     } on AuthException catch (e) {
-      print(e.message);
+      emit(AuthState.error);
     }
   }
 }

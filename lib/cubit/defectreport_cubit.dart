@@ -1,7 +1,7 @@
-import 'package:firereport/utils/db_tables.dart';
+import 'package:firereport/cubit/cubit.dart';
+import 'package:firereport/utils/api_client.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firereport/models/models.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DefectReportState {}
 
@@ -27,20 +27,18 @@ class DefectReportError extends DefectReportState {
   final String message;
   DefectReportError(this.message);
 }
+
 class DefectReportCubit extends Cubit<DefectReportState> {
-  final SupabaseClient client;
+  final AuthCubit authCubit;
   FilterStatus filterStatus = FilterStatus.all;
-  DefectReportCubit(this.client) : super(DefectReportState());
+  DefectReportCubit(this.authCubit) : super(DefectReportState());
 
   Future<void> fetchReports() async {
     try {
       emit(DefectReportLoading());
-      await Future.delayed(const Duration(seconds: 3));
-      final lsReports = await client.from(DbTables.tblDefectReport).select();
-      //.order('id', ascending: false);
-      emit(DefectReportLoaded(
-          lsReports.map((report) => DefectReport.fromJson(report)).toList(),
-          filterStatus));
+      await Future.delayed(const Duration(seconds: 2));
+      final lsReports = await APIClient.getDefectReports();
+      emit(DefectReportLoaded(lsReports, filterStatus));
     } catch (e) {
       emit(DefectReportError(e.toString()));
     }
@@ -48,10 +46,11 @@ class DefectReportCubit extends Cubit<DefectReportState> {
 
   void addReport(DefectReport report) async {
     try {
-      await client.from(DbTables.tblDefectReport).insert(report.toJson());
+      await APIClient.addDefectReport(report);
       if (state is DefectReportLoaded) {
         final currentState = state as DefectReportLoaded;
-        final updatedReports = List<DefectReport>.from(currentState.defectReports)..add(report);
+        final updatedReports =
+            List<DefectReport>.from(currentState.defectReports)..add(report);
         emit(currentState.copyWith(newDefectReport: updatedReports));
       }
     } catch (e) {
@@ -61,14 +60,13 @@ class DefectReportCubit extends Cubit<DefectReportState> {
 
   void updateReport(DefectReport report) async {
     try {
-      await client
-          .from(DbTables.tblDefectReport)
-          .update(report.toJson())
-          .eq('id', report.id);
+      await APIClient.updateDefectReport(report);
       if (state is DefectReportLoaded) {
         final currentState = state as DefectReportLoaded;
-        final updatedReports = List<DefectReport>.from(currentState.defectReports);
-        final index = updatedReports.indexWhere((element) => element.id == report.id);
+        final updatedReports =
+            List<DefectReport>.from(currentState.defectReports);
+        final index =
+            updatedReports.indexWhere((element) => element.id == report.id);
         if (index != -1) {
           updatedReports[index] = report;
         }
@@ -107,6 +105,10 @@ class DefectReportCubit extends Cubit<DefectReportState> {
         return reportState.defectReports
             .where((report) => report.status == ReportState.done)
             .toList();
+      case FilterStatus.assignedToMe:
+        return reportState.defectReports
+          .where((report) => report.assignedUser == authCubit.user.id)
+          .toList();
       case FilterStatus.all:
       default:
         return reportState.defectReports;

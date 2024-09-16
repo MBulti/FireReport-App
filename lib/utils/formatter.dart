@@ -26,6 +26,8 @@ String formatFilterState(FilterStatus status) {
       return "In Bearbeitung";
     case FilterStatus.done:
       return "Abgeschlossen";
+    case FilterStatus.assignedToMe:
+      return "Mir zugewiesen";
     default:
       return "Alle";
   }

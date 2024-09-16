@@ -1,7 +1,6 @@
 import 'package:firereport/cubit/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'pages.dart';
 
 class LoginPage extends StatelessWidget {
@@ -18,8 +17,16 @@ class LoginPage extends StatelessWidget {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => BlocProvider(
-                  create: (context) => DefectReportCubit(supabase.Supabase.instance.client)..fetchReports(),
+                  create: (context) =>
+                      DefectReportCubit(context.read<AuthCubit>())
+                        ..fetchReports(),
                   child: const DefectReportPage()),
+            ),
+          );
+        } else if (state == AuthState.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login fehlgeschlagen'),
             ),
           );
         }
@@ -74,6 +81,10 @@ class LoginPage extends StatelessWidget {
                   onPressed: context.read<AuthCubit>().guestLogin,
                   child: const Text("Gast Login"),
                 ),
+                const SizedBox(height: 24.0),
+                state == AuthState.loading
+                    ? const CircularProgressIndicator()
+                    : Container(),
               ],
             ),
           ),

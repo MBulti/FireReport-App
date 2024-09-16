@@ -23,6 +23,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
   late String description;
   late ReportState status;
   DateTime? dueDate;
+  late DateTime firstDate;
 
   @override
   void initState() {
@@ -33,6 +34,11 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
       description = widget.report!.description;
       status = widget.report!.status;
       dueDate = widget.report!.dueDate;
+      if (dueDate != null && dueDate!.isBefore(DateTime.now())) {
+        firstDate = dueDate!;
+      } else {
+        firstDate = DateTime.now();
+      }
     } else {
       id = DateTime.now().millisecondsSinceEpoch;
       title = "";
@@ -45,7 +51,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
     final selectedDate = await showDatePicker(
         context: context,
         initialDate: dueDate ?? DateTime.now(),
-        firstDate: DateTime.now(),
+        firstDate: firstDate,
         lastDate: DateTime(2101),
         locale: const Locale('de', 'DE'));
     if (selectedDate != null) {
