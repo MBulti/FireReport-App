@@ -36,7 +36,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthState.loading);
       await APIClient.login(userName, password);
       emit(AuthState.authenticated);
-    } on AuthException catch (e) {
+    } on AuthException {
       emit(AuthState.error);
     }
   }
@@ -46,7 +46,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthState.loading);
       await APIClient.loginAnonymously();
       emit(AuthState.anonymous);
-    } on AuthException catch (e) {
+    } on AuthException {
       emit(AuthState.error);
     }
   }
@@ -55,7 +55,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       await APIClient.logout();
       emit(AuthState.unauthenticated);
-    } on AuthException catch (e) {
+    } on AuthException {
       emit(AuthState.error);
     }
   }

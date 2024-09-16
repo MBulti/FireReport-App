@@ -23,8 +23,8 @@ class DefectReport {
       title: json['title'],
       description: json['description'],
       status: json['status'] != null ? ReportState.values[json['status']] : ReportState.open,
-      assignedUser: json['assigned_user'],
       dueDate: json['dt_due'] != null ? DateTime.parse(json['dt_due']) : null,
+      assignedUser: json['assigned_user'],
     );
   }
 

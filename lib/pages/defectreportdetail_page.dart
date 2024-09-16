@@ -18,45 +18,39 @@ class DefectReportDetailPage extends StatefulWidget {
 class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
   final formKey = GlobalKey<FormState>();
 
-  late int id;
-  late String title;
-  late String description;
-  late ReportState status;
-  DateTime? dueDate;
+  late DefectReport report;
   late DateTime firstDate;
 
   @override
   void initState() {
     super.initState();
     if (widget.report != null) {
-      id = widget.report!.id;
-      title = widget.report!.title;
-      description = widget.report!.description;
-      status = widget.report!.status;
-      dueDate = widget.report!.dueDate;
-      if (dueDate != null && dueDate!.isBefore(DateTime.now())) {
-        firstDate = dueDate!;
+      report = widget.report!;
+      if (report.dueDate != null && report.dueDate!.isBefore(DateTime.now())) {
+        firstDate = report.dueDate!;
       } else {
         firstDate = DateTime.now();
       }
     } else {
-      id = DateTime.now().millisecondsSinceEpoch;
-      title = "";
-      description = "";
-      status = ReportState.open;
+      report = DefectReport(
+        id: DateTime.now().millisecondsSinceEpoch,
+        title: "",
+        description: "",
+        status: ReportState.open,
+      );
     }
   }
 
   Future<void> selectDueDate(BuildContext context) async {
     final selectedDate = await showDatePicker(
         context: context,
-        initialDate: dueDate ?? DateTime.now(),
+        initialDate: report.dueDate ?? DateTime.now(),
         firstDate: firstDate,
         lastDate: DateTime(2101),
         locale: const Locale('de', 'DE'));
     if (selectedDate != null) {
       setState(() {
-        dueDate = selectedDate;
+        report.dueDate = selectedDate;
       });
     }
   }
@@ -66,15 +60,8 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
       return;
     }
     formKey.currentState!.save();
-    final newReport = DefectReport(
-      id: id,
-      title: title,
-      description: description,
-      status: status,
-      dueDate: dueDate,
-    );
-    widget.onSave(newReport);
-    Navigator.of(context).pop(newReport);
+    widget.onSave(report);
+    Navigator.of(context).pop(report);
   }
 
   @override
@@ -92,10 +79,10 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
           child: ListView(
             children: [
               TextFormField(
-                initialValue: title,
+                initialValue: report.title,
                 decoration: const InputDecoration(labelText: "Titel"),
                 onSaved: (value) {
-                  title = value!;
+                  report.title = value!;
                 },
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -105,10 +92,10 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                 },
               ),
               TextFormField(
-                initialValue: description,
+                initialValue: report.description,
                 decoration: const InputDecoration(labelText: "Beschreibung"),
                 onSaved: (value) {
-                  description = value!;
+                  report.description = value!;
                 },
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -118,21 +105,21 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                 },
               ),
               DropdownButtonFormField(
-                value: status,
+                value: report.status,
                 decoration: const InputDecoration(labelText: "Status"),
                 items: ReportState.values.map((status) {
                   return DropdownMenuItem(
                       value: status, child: Text(formatReportState(status)));
                 }).toList(),
                 onChanged: (newValue) {
-                  status = newValue!;
+                  report.status = newValue!;
                 },
               ),
               const SizedBox(height: 10),
               ListTile(
-                title: Text(dueDate == null
+                title: Text(report.dueDate == null
                     ? 'Bitte Fälligkeitsdatum auswählen'
-                    : 'Datum: ${formatDate(dueDate!.toLocal())}'),
+                    : 'Datum: ${formatDate(report.dueDate!.toLocal())}'),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: () => selectDueDate(context),
               ),
