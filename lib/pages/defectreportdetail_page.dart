@@ -27,11 +27,6 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
     super.initState();
     if (widget.report != null) {
       report = widget.report!;
-      if (report.dueDate != null && report.dueDate!.isBefore(DateTime.now())) {
-        firstDate = report.dueDate!;
-      } else {
-        firstDate = DateTime.now();
-      }
     } else {
       report = DefectReport(
         id: DateTime.now().millisecondsSinceEpoch,
@@ -40,6 +35,11 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
         status: ReportState.open,
       );
     }
+    if (report.dueDate != null && report.dueDate!.isBefore(DateTime.now())) {
+        firstDate = report.dueDate!;
+      } else {
+        firstDate = DateTime.now();
+      }
   }
 
   Future<void> selectDueDate(BuildContext context) async {
