@@ -10,8 +10,11 @@ Future<void> main() async {
   await APIClient.init();
   runApp(MultiBlocProvider(
     providers: [
-      BlocProvider(create: (_) => SettingsCubit(ThemeMode.light)),
-      BlocProvider(create: (_) => AuthCubit()..checkLoginStatus()),
+      BlocProvider<SettingsCubit>(create: (_) => SettingsCubit(ThemeMode.light)),
+      BlocProvider<AuthCubit>(create: (_) => AuthCubit()..checkLoginStatus()),
+      BlocProvider<DefectReportCubit>(
+        create: (context) => DefectReportCubit(context.read<AuthCubit>()), // Pass AuthCubit to DefectReportCubit
+      ),
     ],
     child: const MyApp(),
   ));
@@ -31,6 +34,7 @@ class MyApp extends StatelessWidget {
           themeMode: thememode,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate
           ],
           home: LoginPage());
     });

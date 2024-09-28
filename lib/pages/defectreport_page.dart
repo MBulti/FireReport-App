@@ -98,9 +98,6 @@ class DefectReportPage extends StatelessWidget {
                                     report: lsReports[index],
                                     index: index,
                                     lsUsers: stateLsUser,
-                                    onSave: (report) => context
-                                        .read<DefectReportCubit>()
-                                        .updateReport(report),
                                   ),
                                 ),
                               );
@@ -126,8 +123,6 @@ class DefectReportPage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (_) => DefectReportDetailPage(
                         lsUsers: stateLsUser,
-                        onSave: (report) =>
-                            context.read<DefectReportCubit>().addReport(report),
                       ),
                     ),
                   );

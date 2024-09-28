@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<string>de-DE</string>
 	<key>CFBundleDisplayName</key>
 	<string>Firereport</string>
 	<key>CFBundleExecutable</key>
@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Kamerazugriff erlauben</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Videozugriff erlauben</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Galeriezugriff erlauben</string>
 </dict>
 </plist>

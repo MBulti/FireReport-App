@@ -7,6 +7,7 @@ class DefectReport {
   ReportState status;
   String? assignedUser;
   DateTime? dueDate;
+  List<ImageModel> lsImages = [];
 
   DefectReport({
     required this.id,
@@ -15,6 +16,7 @@ class DefectReport {
     required this.status,
     this.assignedUser,
     this.dueDate,
+    this.lsImages = const [],
   });
 
   factory DefectReport.fromJson(Map<String, dynamic> json) {

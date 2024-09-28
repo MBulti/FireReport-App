@@ -39,7 +39,7 @@ class DefectReportCubit extends Cubit<DefectReportState> {
   Future<void> fetchReports() async {
     try {
       emit(DefectReportLoading());
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       final lsReports = await APIClient.getDefectReports();
       final lsUsers = await APIClient.getUsers();
       emit(DefectReportLoaded(lsReports, filterStatus, lsUsers));
@@ -48,13 +48,30 @@ class DefectReportCubit extends Cubit<DefectReportState> {
     }
   }
 
-  void addReport(DefectReport report) async {
+  Future<void> upsertReport(DefectReport report) async {
     try {
-      await APIClient.addDefectReport(report);
+      await Future.delayed(const Duration(seconds: 1));
+      if (report.lsImages.isNotEmpty) {
+        for (var image in report.lsImages) {
+          if (image.dtLastModified == null) { 
+            await APIClient.uploadImageToStorage(image);
+            await APIClient.upsertImage(image);
+          }
+        }
+      }
+      await APIClient.upsertDefectReport(report);
       if (state is DefectReportLoaded) {
         final currentState = state as DefectReportLoaded;
+
         final updatedReports =
-            List<DefectReport>.from(currentState.defectReports)..add(report);
+            List<DefectReport>.from(currentState.defectReports);
+        final index =
+            updatedReports.indexWhere((element) => element.id == report.id);
+        if (index != -1) {
+          updatedReports[index] = report;
+        } else {
+          updatedReports.add(report);
+        }
         emit(currentState.copyWith(newDefectReport: updatedReports));
       }
     } catch (e) {
@@ -62,23 +79,9 @@ class DefectReportCubit extends Cubit<DefectReportState> {
     }
   }
 
-  void updateReport(DefectReport report) async {
-    try {
-      await APIClient.updateDefectReport(report);
-      if (state is DefectReportLoaded) {
-        final currentState = state as DefectReportLoaded;
-        final updatedReports =
-            List<DefectReport>.from(currentState.defectReports);
-        final index =
-            updatedReports.indexWhere((element) => element.id == report.id);
-        if (index != -1) {
-          updatedReports[index] = report;
-        }
-        emit(currentState.copyWith(newDefectReport: updatedReports));
-      }
-    } catch (e) {
-      emit(DefectReportError(e.toString()));
-    }
+  Future<ImageModel> downloadImage(ImageModel image) async {
+    image.imageBytes = await APIClient.downloadImageFromStorage(image.url);
+    return image;
   }
 
   void setFilter(FilterStatus newFilter) {

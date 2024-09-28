@@ -15,13 +15,10 @@ class LoginPage extends StatelessWidget {
       listener: (context, state) {
         if (state == AuthState.authenticated || state == AuthState.anonymous) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => BlocProvider(
-                  create: (context) =>
-                      DefectReportCubit(context.read<AuthCubit>())
-                        ..fetchReports(),
-                  child: const DefectReportPage()),
-            ),
+            MaterialPageRoute(builder: (context) {
+              context.read<DefectReportCubit>().fetchReports();
+              return const DefectReportPage();
+            }),
           );
         } else if (state == AuthState.error) {
           ScaffoldMessenger.of(context).showSnackBar(

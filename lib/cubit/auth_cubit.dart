@@ -17,7 +17,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> checkLoginStatus() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (Supabase.instance.client.auth.currentSession != null) {
       if (Supabase.instance.client.auth.currentSession!.user.isAnonymous) {

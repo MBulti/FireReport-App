@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:firereport/utils/db_tables.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firereport/models/models.dart';
@@ -48,25 +49,25 @@ class APIClient {
 
   // #region DefectReport
   static Future<List<DefectReport>> getDefectReports() async {
-    final lsReports = await Supabase.instance.client
-        .from(DbTables.tblDefectReport)
-        .select();
-        // .order('status', ascending: true)
-        // .order('dt_due', ascending: true);
-    return lsReports.map((report) => DefectReport.fromJson(report)).toList();
+    final lsReports =
+        await Supabase.instance.client.from(DbTables.tblDefectReport).select();
+    // .order('status', ascending: true)
+    // .order('dt_due', ascending: true);
+
+    final lsDefectReports =
+        lsReports.map((report) => DefectReport.fromJson(report)).toList();
+
+    for (var report in lsDefectReports) {
+      report.lsImages = await getImages(report.id);
+    }
+
+    return lsDefectReports;
   }
 
-  static Future<void> addDefectReport(DefectReport report) async {
+  static Future<void> upsertDefectReport(DefectReport report) async {
     await Supabase.instance.client
         .from(DbTables.tblDefectReport)
-        .insert(report.toJson());
-  }
-
-  static Future<void> updateDefectReport(DefectReport report) async {
-    await Supabase.instance.client
-        .from(DbTables.tblDefectReport)
-        .update(report.toJson())
-        .eq('id', report.id);
+        .upsert(report.toJson());
   }
 
   static Future<List<AppUser>> getUsers() async {
@@ -75,6 +76,38 @@ class APIClient {
         .select()
         .order('last_name');
     return lsUsers.map((user) => AppUser.fromJson(user)).toList();
+  }
+  // #endregion
+
+  // #region Image
+  static Future<List<ImageModel>> getImages(int reportId) async {
+    final lsImages = await Supabase.instance.client
+        .from(DbTables.tblImage)
+        .select()
+        .eq('report_id', reportId);
+    return lsImages.map((image) => ImageModel.fromJson(image)).toList();
+  }
+
+  static Future<void> upsertImage(ImageModel image) async {
+    image.dtLastModified = DateTime.now();
+    await Supabase.instance.client
+        .from(DbTables.tblImage)
+        .upsert(image.toJson());
+  }
+
+  static Future<String> uploadImageToStorage(ImageModel image) async {
+    final response = await Supabase.instance.client.storage
+        .from(StorageBuckets.dataImages)
+        .uploadBinary(image.url, image.imageBytes!);
+
+    return response;
+  }
+
+  static Future<Uint8List?> downloadImageFromStorage(String url) async {
+    final response = await Supabase.instance.client.storage
+        .from(StorageBuckets.dataImages)
+        .download(url);
+    return response;
   }
   // #endregion
 }
