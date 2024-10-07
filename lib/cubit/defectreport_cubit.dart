@@ -45,6 +45,7 @@ class DefectReportCubit extends Cubit<DefectReportState> {
       emit(DefectReportLoaded(lsReports, filterStatus, lsUsers));
     } catch (e) {
       emit(DefectReportError(e.toString()));
+      await APIClient.addLog(e.toString());
     }
   }
 
@@ -76,6 +77,7 @@ class DefectReportCubit extends Cubit<DefectReportState> {
       }
     } catch (e) {
       emit(DefectReportError(e.toString()));
+      await APIClient.addLog(e.toString());
     }
   }
 

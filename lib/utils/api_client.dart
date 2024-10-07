@@ -14,6 +14,18 @@ class APIClient {
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0andwa3FuZWhjaGVndnhlc3ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1Mzg0OTYsImV4cCI6MjAzOTExNDQ5Nn0.7ZAHS7OOwcJy3ooTwhMVKhgbih6bLYvSvQ44A8-vC3M");
   }
 
+  // #region Logging
+  static Future<void> addLog(String message) async {
+    final log = LogModel(
+      message: message,
+      createdAt: DateTime.now(),
+    );
+    await Supabase.instance.client.from(DbTables.tblLog).insert(
+      log.toJson(),
+    );
+  }
+  // #endregion
+
   // #region Auth
   static Future<void> setCurrentUser(User user) async {
     currentUser = await getUser(user);
