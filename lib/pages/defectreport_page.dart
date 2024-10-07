@@ -143,6 +143,7 @@ class DefectReportListItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Card(
+        elevation: 2,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(

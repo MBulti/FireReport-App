@@ -148,6 +148,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                 child: ListView(
                   children: [
                     Card.outlined(
+                      elevation: 2,
                       child: Column(
                         children: [
                           const Padding(
@@ -225,6 +226,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                     ),
                     const SizedBox(height: 20),
                     Card.outlined(
+                      elevation: 2,
                       child: Column(
                         children: [
                           const Padding(

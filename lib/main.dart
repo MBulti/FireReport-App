@@ -29,11 +29,21 @@ class MyApp extends StatelessWidget {
       return MaterialApp(
           title: 'FireReport',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData.light(
+          theme: ThemeData(
             useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.blueAccent,
+              brightness: Brightness.light,
+              dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+            ),
           ),
-          darkTheme: ThemeData.dark(
+          darkTheme: ThemeData(
             useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.blueAccent,
+              brightness: Brightness.dark,
+              dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+            ),
           ),
           themeMode: thememode,
           localizationsDelegates: const [
