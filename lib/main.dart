@@ -29,8 +29,12 @@ class MyApp extends StatelessWidget {
       return MaterialApp(
           title: 'FireReport',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData.light(),
-          darkTheme: ThemeData.dark(),
+          theme: ThemeData.light(
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData.dark(
+            useMaterial3: true,
+          ),
           themeMode: thememode,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,

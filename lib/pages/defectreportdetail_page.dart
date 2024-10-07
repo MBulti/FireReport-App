@@ -25,6 +25,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
 
   late DefectReport report;
   late DateTime firstDate;
+  bool isNotifyUser = false;
   bool isImagesFetched = false;
   bool isLoadImagesInProgress = false;
   bool isSaveInProgress = false;
@@ -206,6 +207,16 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                                   trailing: const Icon(Icons.calendar_today),
                                   onTap: () => selectDueDate(context),
                                 ),
+                                const SizedBox(height: 10),
+                                SwitchListTile(
+                                    title: const Text(
+                                        "Benachrichtige mich bei Änderungen"),
+                                    value: isNotifyUser,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isNotifyUser = value;
+                                      });
+                                    }),
                               ],
                             ),
                           ),
@@ -292,7 +303,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                                                       SizedBox(
                                                         width: 5,
                                                       ),
-                                                      Text("Gallerie"),
+                                                      Text("Galerie"),
                                                     ],
                                                   ))
                                             ],
@@ -393,7 +404,8 @@ class ReportImage extends StatelessWidget {
         width: 100,
         child: Hero(
           tag: imageModel.id,
-          child: Image.memory(imageModel.imageBytes!)),
+          child: Image.memory(imageModel.imageBytes!),
+        ),
       ),
     );
   }
