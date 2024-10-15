@@ -40,4 +40,25 @@ class DefectReport {
       'assigned_user': assignedUser
     };
   }
+
+    // Copy with method to create a new instance of DefectReport with updated fields
+  DefectReport copyWith({
+    int? id,
+    String? title,
+    String? description,
+    ReportState? status,
+    String? assignedUser,
+    DateTime? dueDate,
+    List<ImageModel>? lsImages,
+  }) {
+    return DefectReport(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      status: status ?? this.status,
+      assignedUser: assignedUser ?? this.assignedUser,
+      dueDate: dueDate ?? this.dueDate,
+      lsImages: lsImages ?? this.lsImages,
+    );
+  }
 }

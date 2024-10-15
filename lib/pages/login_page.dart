@@ -1,92 +1,92 @@
-import 'package:firereport/cubit/cubit.dart';
+import 'package:firereport/notifier/notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'pages.dart';
 
-class LoginPage extends StatelessWidget {
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
+class LoginPage extends ConsumerWidget {
   LoginPage({super.key});
 
+  final userNameController = Provider.autoDispose((ref) {
+    final controller = TextEditingController();
+    ref.onDispose(() => controller.dispose());
+    return controller;
+  });
+  final passwordController = Provider.autoDispose((ref) {
+    final controller = TextEditingController();
+    ref.onDispose(() => controller.dispose());
+    return controller;
+  });
+
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<AuthCubit, AuthState>(
-      listener: (context, state) {
-        if (state == AuthState.authenticated || state == AuthState.anonymous) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) {
-              context.read<DefectReportCubit>().fetchReports();
-              return const DefectReportPage();
-            }),
-          );
-        } else if (state == AuthState.error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Login fehlgeschlagen'),
-            ),
-          );
-        }
-      },
-      builder: (context, state) {
-        if (state == AuthState.splash) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Login'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
-                  );
-                },
-              ),
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Passwort",
-                  ),
-                ),
-                const SizedBox(height: 24.0),
-                ElevatedButton(
-                  onPressed: () => context
-                      .read<AuthCubit>()
-                      .login(usernameController.text, passwordController.text),
-                  child: const Text("Login"),
-                ),
-                ElevatedButton(
-                  onPressed: context.read<AuthCubit>().guestLogin,
-                  child: const Text("Gast Login"),
-                ),
-                const SizedBox(height: 24.0),
-                state == AuthState.loading
-                    ? const CircularProgressIndicator()
-                    : Container(),
-              ],
-            ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(authProvider, (previous, next) {
+      if (next == AuthState.authenticated || next == AuthState.anonymous) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) {
+            return const DefectReportPage();
+          }),
+        );
+      } else if (next == AuthState.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login fehlgeschlagen'),
           ),
         );
-      },
+      }
+    });
+    var authState = ref.watch(authProvider);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: ref.watch(userNameController),
+              decoration: const InputDecoration(
+                labelText: "Email",
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: ref.watch(passwordController),
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "Passwort",
+              ),
+            ),
+            const SizedBox(height: 24.0),
+            ElevatedButton(
+              onPressed: () => ref.read(authProvider.notifier).login(
+                  ref.read(userNameController).text,
+                  ref.read(passwordController).text),
+              child: const Text("Login"),
+            ),
+            ElevatedButton(
+              onPressed: ref.read(authProvider.notifier).guestLogin,
+              child: const Text("Gast Login"),
+            ),
+            const SizedBox(height: 24.0),
+            authState == AuthState.loading
+                ? const CircularProgressIndicator()
+                : Container(),
+          ],
+        ),
+      ),
     );
   }
 }

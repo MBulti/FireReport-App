@@ -1,11 +1,11 @@
-import 'package:firereport/cubit/cubit.dart';
 import 'package:firereport/models/models.dart';
+import 'package:firereport/notifier/notifier.dart';
 import 'package:firereport/utils/formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class DefectReportDetailPage extends StatefulWidget {
+class DefectReportDetailPage extends ConsumerStatefulWidget {
   const DefectReportDetailPage({
     super.key,
     this.report,
@@ -17,10 +17,12 @@ class DefectReportDetailPage extends StatefulWidget {
   final int? index;
 
   @override
-  State<DefectReportDetailPage> createState() => _DefectReportDetailPageState();
+  ConsumerState<DefectReportDetailPage> createState() =>
+      _DefectReportDetailPageState();
 }
 
-class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
+class _DefectReportDetailPageState
+    extends ConsumerState<DefectReportDetailPage> {
   final formKey = GlobalKey<FormState>();
 
   late DefectReport report;
@@ -93,7 +95,9 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
       isLoadImagesInProgress = true;
     });
     for (var image in report.lsImages) {
-      image = await context.read<DefectReportCubit>().downloadImage(image);
+      image = await ref
+          .read(defectReportNotifierProvider.notifier)
+          .downloadImage(image);
     }
     setState(() {
       isImagesFetched = true;
@@ -109,7 +113,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
     setState(() {
       isSaveInProgress = true;
     });
-    await context.read<DefectReportCubit>().upsertReport(report);
+    await ref.read(defectReportNotifierProvider.notifier).upsertReport(report);
     setState(() {
       isSaveInProgress = false;
     });
@@ -325,7 +329,7 @@ class _DefectReportDetailPageState extends State<DefectReportDetailPage> {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                        onPressed: context.read<AuthCubit>().isAnonymousUser
+                        onPressed: ref.read(authProvider.notifier).isAnonymousUser
                             ? null
                             : save,
                         child: Text(

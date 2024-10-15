@@ -1,136 +1,124 @@
-import 'package:firereport/pages/pages.dart';
-import 'package:firereport/utils/formatter.dart';
-import 'package:firereport/utils/helper_extension.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firereport/models/models.dart';
-import 'package:firereport/cubit/cubit.dart';
+import 'package:firereport/utils/formatter.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firereport/notifier/notifier.dart';
+import 'pages.dart';
 
-class DefectReportPage extends StatelessWidget {
+class DefectReportPage extends ConsumerWidget {
   const DefectReportPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocSelector<DefectReportCubit, DefectReportState, List<AppUser>>(
-        selector: (state) {
-      if (state is DefectReportLoaded) {
-        return state.users;
-      }
-      return [];
-    }, builder: (context, stateLsUser) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Aktuelle Mängelberichte'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              },
-            ),
-          ],
-        ),
-        body: Column(children: [
-          // dropdown
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final defectReportState = ref.watch(defectReportNotifierProvider);
+
+    // Get the current list of users (for assignment)
+    final stateLsUser = defectReportState is DefectReportLoaded
+        ? defectReportState.users
+        : List<AppUser>.empty();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Aktuelle Mängelberichte'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Filter Dropdown
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: BlocSelector<DefectReportCubit, DefectReportState,
-                FilterStatus>(selector: (state) {
-              if (state is DefectReportLoaded) {
-                return state.filterStatus;
-              }
-              return FilterStatus.all;
-            }, builder: (context, stateFilterStatus) {
-              return DropdownButtonFormField<FilterStatus>(
-                value: stateFilterStatus,
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButtonFormField<FilterStatus>(
+                value: defectReportState is DefectReportLoaded
+                    ? defectReportState.filterStatus
+                    : FilterStatus.all,
                 items: FilterStatus.values.map((status) {
                   return DropdownMenuItem(
-                      value: status, child: Text(formatFilterState(status)));
+                    value: status,
+                    child: Text(formatFilterState(status)),
+                  );
                 }).toList(),
                 onChanged: (newValue) {
-                  context.read<DefectReportCubit>().setFilter(newValue!);
+                  ref
+                      .read(defectReportNotifierProvider.notifier)
+                      .setFilter(newValue!);
                 },
                 decoration: const InputDecoration(
                   labelText: 'Nach Status filtern',
                   border: OutlineInputBorder(),
                 ),
-              );
-            }),
-          ),
-          // list
+              )),
+          // Report List
           Expanded(
-            child: BlocBuilder<DefectReportCubit, DefectReportState>(
-              builder: (context, state) {
-                if (state is DefectReportLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is DefectReportError) {
-                  return Center(child: Text(state.message));
-                } else if (state is DefectReportLoaded) {
-                  var lsReports =
-                      context.read<DefectReportCubit>().filteredReports;
-                  //lsReports.sort((a, b) => b.id.compareTo(a.id));
-
-                  lsReports.sort((a, b) {
-                    int statusComparison = a.status.compareToEnum(b.status);
-                    if (statusComparison != 0) {
-                      return statusComparison;
-                    } else {
-                      return a.dueDate.compareNullableTo(b.dueDate);
-                    }
-                  });
-
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      await context.read<DefectReportCubit>().fetchReports();
-                    },
-                    child: ListView.builder(
-                      itemCount: lsReports.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => DefectReportDetailPage(
-                                    report: lsReports[index],
-                                    index: index,
-                                    lsUsers: stateLsUser,
-                                  ),
-                                ),
-                              );
+            child: defectReportState is DefectReportLoading
+                ? const Center(child: CircularProgressIndicator())
+                : defectReportState is DefectReportError
+                    ? Center(child: Text(defectReportState.message))
+                    : defectReportState is DefectReportLoaded
+                        ? RefreshIndicator(
+                            onRefresh: () async {
+                              await ref
+                                  .read(defectReportNotifierProvider.notifier)
+                                  .fetchReports();
                             },
-                            child:
-                                DefectReportListItem(report: lsReports[index]));
-                      },
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+                            child: ListView.builder(
+                              itemCount: ref
+                                  .read(defectReportNotifierProvider.notifier)
+                                  .filteredReports
+                                  .length,
+                              itemBuilder: (context, index) {
+                                final report = ref
+                                    .read(defectReportNotifierProvider.notifier)
+                                    .filteredReports[index];
+
+                                return GestureDetector(
+                                  onTap: () async {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => DefectReportDetailPage(
+                                          report: report,
+                                          index: index,
+                                          lsUsers: stateLsUser,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: DefectReportListItem(report: report),
+                                );
+                              },
+                            ),
+                          )
+                        : const Center(child: Text('Keine Mängeberichte verfügbar')),
           ),
-        ]),
-        floatingActionButton: context.read<AuthCubit>().isAnonymousUser
-            ? null
-            : FloatingActionButton(
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DefectReportDetailPage(
-                        lsUsers: stateLsUser,
-                      ),
+        ],
+      ),
+      floatingActionButton: ref.read(authProvider.notifier).isAnonymousUser
+          ? null
+          : FloatingActionButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DefectReportDetailPage(
+                      lsUsers: stateLsUser,
                     ),
-                  );
-                },
-                child: const Icon(Icons.add),
-              ),
-      );
-    });
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
+    );
   }
 }
 
