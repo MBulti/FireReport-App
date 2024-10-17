@@ -57,17 +57,33 @@ class LoginPage extends ConsumerWidget {
           children: [
             TextField(
               controller: ref.watch(userNameController),
-              decoration: const InputDecoration(
-                labelText: "Email",
-              ),
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                  labelText: "Email",
+                  prefixIcon: const Icon(Icons.person),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: ref.watch(passwordController),
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "Passwort",
-              ),
+              keyboardType: TextInputType.visiblePassword,
+              decoration: InputDecoration(
+                  labelText: "Passwort",
+                  prefixIcon: const Icon(Icons.lock),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
             ),
             const SizedBox(height: 24.0),
             ElevatedButton(

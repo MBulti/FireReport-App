@@ -4,7 +4,6 @@ import 'package:firereport/utils/api_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum AuthState {
-  splash,
   loading,
   authenticated,
   anonymous,
@@ -13,7 +12,7 @@ enum AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState.splash);
+  AuthNotifier() : super(AuthState.loading);
 
   // Determine if the user is anonymous
   bool get isAnonymousUser {

@@ -7,6 +7,7 @@ class DefectReport {
   ReportState status;
   String? assignedUser;
   DateTime? dueDate;
+  bool isNotifyUser;
   List<ImageModel> lsImages = [];
 
   DefectReport({
@@ -16,6 +17,7 @@ class DefectReport {
     required this.status,
     this.assignedUser,
     this.dueDate,
+    this.isNotifyUser = false,
     this.lsImages = const [],
   });
 

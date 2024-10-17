@@ -1,4 +1,5 @@
 import 'package:firereport/notifier/notifier.dart';
+import 'package:firereport/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'pages.dart';
@@ -37,11 +38,32 @@ class SettingsPage extends ConsumerWidget {
           const SizedBox(
             height: 30,
           ),
+          // ElevatedButton(
+          //     onPressed: () {
+          //       BetterFeedback.of(context).show((UserFeedback feedback) async {
+          //         try {
+          //           await Future.delayed(const Duration(milliseconds: 500));
+          //         } catch (e) {
+          //           print(e);
+          //         }
+          //       });
+          //     },
+          //     child: const Text("Fehler melden")),
           ElevatedButton(
-              onPressed: () {
-                ref.read(authProvider.notifier).logout();
-              },
-              child: const Text("Ausloggen"))
+            onPressed: () {
+              ref.read(authProvider.notifier).logout();
+            },
+            child: const Text("Ausloggen"),
+          ),
+          const Spacer(),
+          ref.watch(appVersionProvider).when(
+                data: (data) => Text(data),
+                loading: () => const SizedBox.shrink(),
+                error: (err, stack) => const SizedBox.shrink(),
+              ),
+          const SizedBox(
+            height: 50,
+          )
         ],
       ),
     );

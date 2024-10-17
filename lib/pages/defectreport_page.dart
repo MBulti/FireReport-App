@@ -10,13 +10,7 @@ class DefectReportPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    final defectReportState = ref.watch(defectReportNotifierProvider);
-
-    // Get the current list of users (for assignment)
-    final stateLsUser = defectReportState is DefectReportLoaded
-        ? defectReportState.users
-        : List<AppUser>.empty();
+    final viewModel = ref.watch(defectReportNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -33,88 +27,99 @@ class DefectReportPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Filter Dropdown
-          Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButtonFormField<FilterStatus>(
-                value: defectReportState is DefectReportLoaded
-                    ? defectReportState.filterStatus
-                    : FilterStatus.all,
-                items: FilterStatus.values.map((status) {
-                  return DropdownMenuItem(
-                    value: status,
-                    child: Text(formatFilterState(status)),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  ref
-                      .read(defectReportNotifierProvider.notifier)
-                      .setFilter(newValue!);
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Nach Status filtern',
-                  border: OutlineInputBorder(),
-                ),
-              )),
-          // Report List
-          Expanded(
-            child: defectReportState is DefectReportLoading
-                ? const Center(child: CircularProgressIndicator())
-                : defectReportState is DefectReportError
-                    ? Center(child: Text(defectReportState.message))
-                    : defectReportState is DefectReportLoaded
-                        ? RefreshIndicator(
-                            onRefresh: () async {
-                              await ref
-                                  .read(defectReportNotifierProvider.notifier)
-                                  .fetchReports();
-                            },
-                            child: ListView.builder(
-                              itemCount: ref
-                                  .read(defectReportNotifierProvider.notifier)
-                                  .filteredReports
-                                  .length,
-                              itemBuilder: (context, index) {
-                                final report = ref
+      body: viewModel.isSaveInProgress
+          ? const DefectReportSaving()
+          : Column(
+              children: [
+                // Filter Dropdown
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: DropdownButtonFormField<FilterStatus>(
+                      value: viewModel.filterStatus,
+                      items: FilterStatus.values.map((status) {
+                        return DropdownMenuItem(
+                          value: status,
+                          child: Text(formatFilterState(status)),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        ref
+                            .read(defectReportNotifierProvider.notifier)
+                            .setFilter(newValue!);
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Nach Status filtern',
+                        border: OutlineInputBorder(),
+                      ),
+                    )),
+                // Report List
+                Expanded(
+                  child: viewModel.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : viewModel.errorMessage != null
+                          ? Center(child: Text(viewModel.errorMessage!))
+                          : RefreshIndicator(
+                              onRefresh: () async {
+                                await ref
                                     .read(defectReportNotifierProvider.notifier)
-                                    .filteredReports[index];
-
-                                return GestureDetector(
-                                  onTap: () async {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => DefectReportDetailPage(
-                                          report: report,
-                                          index: index,
-                                          lsUsers: stateLsUser,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: DefectReportListItem(report: report),
-                                );
+                                    .fetchReports();
                               },
+                              child: ListView.builder(
+                                itemCount: ref
+                                    .read(defectReportNotifierProvider.notifier)
+                                    .filteredReports
+                                    .length,
+                                itemBuilder: (context, index) {
+                                  final report = ref
+                                      .read(
+                                          defectReportNotifierProvider.notifier)
+                                      .filteredReports[index];
+
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      var updatedReport = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              DefectReportDetailPage(
+                                            report: report,
+                                            index: index,
+                                            lsUsers: viewModel.users,
+                                          ),
+                                        ),
+                                      );
+                                      if (updatedReport != null) {
+                                        ref
+                                            .read(defectReportNotifierProvider
+                                                .notifier)
+                                            .upsertReport(updatedReport);
+                                      }
+                                    },
+                                    child: DefectReportListItem(report: report),
+                                  );
+                                },
+                              ),
                             ),
-                          )
-                        : const Center(child: Text('Keine Mängeberichte verfügbar')),
-          ),
-        ],
-      ),
+                ),
+              ],
+            ),
       floatingActionButton: ref.read(authProvider.notifier).isAnonymousUser
           ? null
           : FloatingActionButton(
               onPressed: () async {
-                await Navigator.push(
+                var newReport = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => DefectReportDetailPage(
-                      lsUsers: stateLsUser,
+                      lsUsers: viewModel.users,
                     ),
                   ),
                 );
+                if (newReport != null) {
+                  ref
+                      .read(defectReportNotifierProvider.notifier)
+                      .upsertReport(newReport);
+                }
               },
               child: const Icon(Icons.add),
             ),
@@ -156,5 +161,23 @@ class DefectReportListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class DefectReportSaving extends StatelessWidget {
+  const DefectReportSaving({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(),
+        SizedBox(height: 20),
+        Text("Bericht wird gespeichert ..."),
+      ],
+    ));
   }
 }
