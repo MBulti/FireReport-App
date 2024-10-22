@@ -26,199 +26,269 @@ class DefectReportDetailPage extends ConsumerWidget {
       AppUser(id: null, firstName: "Kein Benutzer", lastName: ""),
       ...lsUsers
     ];
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-            index == null ? 'Neuer Mängelbericht' : 'Mängelbericht bearbeiten'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Form(
-          key: formKey,
-          child: ListView(
-            children: [
-              Card(
-                color: Theme.of(context).colorScheme.secondary,
-                elevation: 2,
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: Text(
-                        "Eigenschaften",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(index == null
+              ? 'Neuer Mängelbericht'
+              : 'Mängelbericht bearbeiten'),
+          bottom: TabBar(
+            tabAlignment: TabAlignment.center,
+            isScrollable: true,
+            indicatorColor: Colors.transparent,
+            tabs: [
+              Tab(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(30), 
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.edit_document,
+                        color: Colors.white,
                       ),
-                    ),
-                    const Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            initialValue: viewModel.report.title,
-                            decoration: const InputDecoration(
-                              labelText: "Titel",
-                            ),
-                            onSaved: (value) {
-                              viewModel.report.title = value!;
-                            },
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Bitte einen Titel eingeben';
-                              }
-                              return null;
-                            },
-                          ),
-                          TextFormField(
-                            initialValue: viewModel.report.description,
-                            decoration: const InputDecoration(
-                                labelText: "Beschreibung"),
-                            onSaved: (value) {
-                              viewModel.report.description = value!;
-                            },
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Bitte eine Beschreibung eingeben';
-                              }
-                              return null;
-                            },
-                            maxLines: 5,
-                            minLines: 3,
-                            keyboardType: TextInputType.multiline,
-                          ),
-                          DropdownStatus(report: viewModel.report),
-                          const SizedBox(height: 10),
-                          DropdownUser(
-                              userItems: userItems, report: viewModel.report),
-                          const SizedBox(height: 10),
-                          ListTile(
-                            title: Text(viewModel.report.dueDate == null
-                                ? 'Bitte Fälligkeitsdatum auswählen'
-                                : 'Datum: ${formatDate(viewModel.report.dueDate!.toLocal())}'),
-                            trailing: const Icon(Icons.calendar_today),
-                            onTap: () => viewModel.selectDueDate(context),
-                          ),
-                          const SizedBox(height: 10),
-                          SwitchListTile(
-                              title: const Text(
-                                  "Benachrichtige mich bei Änderungen"),
-                              value: viewModel.report.isNotifyUser,
-                              onChanged: (value) {
-                                viewModel.setNotifyUser(value);
-                              }),
-                        ],
+                      SizedBox(width: 6),
+                      Text(
+                        'Eigenschaften',
+                        style: TextStyle(color: Colors.white),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Card(
-                color: Theme.of(context).colorScheme.secondary,
-                elevation: 2,
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: Text(
-                        "Bilder",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+              Tab(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.image,
+                        color: Colors.white,
                       ),
-                    ),
-                    const Divider(),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                      child: viewModel.isLoadImagesInProgress
-                          ? const Center(
-                              child: Column(
-                                children: [
-                                  CircularProgressIndicator(),
-                                  SizedBox(height: 20),
-                                  Text("Bilder werden geladen..."),
-                                ],
-                              ),
-                            )
-                          : viewModel.isImagesFetched
-                              ? Column(
-                                  children: [
-                                    viewModel.report.lsImages
-                                            .where((x) => x.imageBytes != null)
-                                            .isNotEmpty
-                                        ? SizedBox(
-                                            height: 100,
-                                            child: ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: viewModel
-                                                  .report.lsImages.length,
-                                              itemBuilder: (context, index) {
-                                                return ReportImage(
-                                                    imageModel: viewModel.report
-                                                        .lsImages[index]);
-                                              },
-                                            ),
-                                          )
-                                        : const Text("Keine Bilder vorhanden"),
-                                    const SizedBox(height: 20),
-                                    ElevatedButton(
-                                      onPressed: () =>
-                                          viewModel.addImage(context),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.add_a_photo_outlined,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary),
-                                          const SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            "Bild hinzufügen",
-                                            style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimary),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Center(
-                                  child: ElevatedButton(
-                                    onPressed: viewModel.downloadImages,
-                                    child: Text(
-                                      "Bilder herunterladen (${viewModel.report.lsImages.length})",
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary),
-                                    ),
-                                  ),
-                                ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    formKey.currentState!.save();
-                    Navigator.of(context).pop(viewModel.report);
-                  }
-                },
-                child: Text(
-                  "Speichern",
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                      SizedBox(width: 6),
+                      Text(
+                        'Bilder',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Form(
+            key: formKey,
+            child: TabBarView(
+              children: [
+                // First Tab: Eigenschaften (Properties)
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Card(
+                        color: Theme.of(context).colorScheme.secondary,
+                        elevation: 2,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    initialValue: viewModel.report.title,
+                                    decoration: const InputDecoration(
+                                      labelText: "Titel",
+                                    ),
+                                    onSaved: (value) {
+                                      viewModel.report.title = value!;
+                                    },
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return 'Bitte einen Titel eingeben';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  TextFormField(
+                                    initialValue: viewModel.report.description,
+                                    decoration: const InputDecoration(
+                                        labelText: "Beschreibung"),
+                                    onSaved: (value) {
+                                      viewModel.report.description = value!;
+                                    },
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return 'Bitte eine Beschreibung eingeben';
+                                      }
+                                      return null;
+                                    },
+                                    maxLines: 5,
+                                    minLines: 3,
+                                    keyboardType: TextInputType.multiline,
+                                  ),
+                                  DropdownStatus(report: viewModel.report),
+                                  const SizedBox(height: 10),
+                                  DropdownUser(
+                                      userItems: userItems,
+                                      report: viewModel.report),
+                                  const SizedBox(height: 10),
+                                  ListTile(
+                                    title: Text(viewModel.report.dueDate == null
+                                        ? 'Bitte Fälligkeitsdatum auswählen'
+                                        : 'Datum: ${formatDate(viewModel.report.dueDate!.toLocal())}'),
+                                    trailing: const Icon(Icons.calendar_today),
+                                    onTap: () =>
+                                        viewModel.selectDueDate(context),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  SwitchListTile(
+                                      title: const Text(
+                                          "Benachrichtige mich bei Änderungen"),
+                                      value: viewModel.report.isNotifyUser,
+                                      onChanged: (value) {
+                                        viewModel.setNotifyUser(value);
+                                      }),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            formKey.currentState!.save();
+                            Navigator.of(context).pop(viewModel.report);
+                          }
+                        },
+                        child: Text(
+                          "Speichern",
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Second Tab: Bilder (Images)
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Card(
+                        color: Theme.of(context).colorScheme.secondary,
+                        elevation: 2,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                              child: viewModel.isLoadImagesInProgress
+                                  ? const Center(
+                                      child: Column(
+                                        children: [
+                                          CircularProgressIndicator(),
+                                          SizedBox(height: 20),
+                                          Text("Bilder werden geladen..."),
+                                        ],
+                                      ),
+                                    )
+                                  : viewModel.isImagesFetched
+                                      ? Column(
+                                          children: [
+                                            viewModel.report.lsImages
+                                                    .where((x) =>
+                                                        x.imageBytes != null)
+                                                    .isNotEmpty
+                                                ? GridView.builder(
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                        const NeverScrollableScrollPhysics(),
+                                                    gridDelegate:
+                                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 2,
+                                                      mainAxisSpacing: 4.0,
+                                                      crossAxisSpacing: 4.0,
+                                                      childAspectRatio: 1.0,
+                                                    ),
+                                                    itemCount: viewModel
+                                                        .report.lsImages.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return ReportImage(
+                                                          imageModel: viewModel
+                                                              .report
+                                                              .lsImages[index]);
+                                                    },
+                                                  )
+                                                : const Text(
+                                                    "Keine Bilder vorhanden"),
+                                            const SizedBox(height: 20),
+                                            ElevatedButton(
+                                              onPressed: () =>
+                                                  viewModel.addImage(context),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                      Icons
+                                                          .add_a_photo_outlined,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimary),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    "Bild hinzufügen",
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Center(
+                                          child: ElevatedButton(
+                                            onPressed: viewModel.downloadImages,
+                                            child: Text(
+                                              "Bilder herunterladen (${viewModel.report.lsImages.length})",
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary),
+                                            ),
+                                          ),
+                                        ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
