@@ -57,6 +57,31 @@ class DefectReportDetailNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addImage(BuildContext context) async {
+    showModalBottomSheet(context: context, builder: (context) {
+      return Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.add_a_photo_outlined),
+              title: const Text('Kamera'),
+              onTap: () {
+                Navigator.pop(context);
+                pickImage(context, ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.add_photo_alternate_outlined),
+              title: const Text('Galerie'),
+              onTap: () {
+                Navigator.pop(context);
+                pickImage(context, ImageSource.gallery);
+              },
+            ),
+          ],
+        );
+    });
+  }
+
   Future<void> pickImage(BuildContext context, ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);

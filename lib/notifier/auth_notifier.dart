@@ -3,13 +3,7 @@ import 'package:firereport/models/models.dart';
 import 'package:firereport/utils/api_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-enum AuthState {
-  loading,
-  authenticated,
-  anonymous,
-  unauthenticated,
-  error
-}
+enum AuthState { loading, authenticated, anonymous, unauthenticated, error }
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier() : super(AuthState.loading);

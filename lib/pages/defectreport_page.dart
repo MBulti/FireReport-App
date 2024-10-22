@@ -33,25 +33,52 @@ class DefectReportPage extends ConsumerWidget {
               children: [
                 // Filter Dropdown
                 Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: DropdownButtonFormField<FilterStatus>(
-                      value: viewModel.filterStatus,
-                      items: FilterStatus.values.map((status) {
-                        return DropdownMenuItem(
-                          value: status,
-                          child: Text(formatFilterState(status)),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        ref
-                            .read(defectReportNotifierProvider.notifier)
-                            .setFilter(newValue!);
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'Nach Status filtern',
-                        border: OutlineInputBorder(),
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButtonFormField<FilterStatus>(
+                    value: viewModel.filterStatus,
+                    items: FilterStatus.values.map((status) {
+                      return DropdownMenuItem(
+                        value: status,
+                        child: Text(formatFilterState(status)),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      ref
+                          .read(defectReportNotifierProvider.notifier)
+                          .setFilter(newValue!);
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Nach Status filtern',
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
-                    )),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.secondary,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                      ),
+                    ),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                    dropdownColor: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
                 // Report List
                 Expanded(
                   child: viewModel.isLoading
@@ -136,6 +163,7 @@ class DefectReportListItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Card(
+        color: Theme.of(context).colorScheme.secondary,
         elevation: 2,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -169,14 +197,16 @@ class DefectReportSaving extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return  Center(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircularProgressIndicator(),
-        SizedBox(height: 20),
-        Text("Bericht wird gespeichert ..."),
+        const CircularProgressIndicator(),
+        const SizedBox(height: 20),
+        Text("Bericht wird gespeichert ...", style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface),
+        ),
       ],
     ));
   }

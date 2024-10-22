@@ -23,48 +23,56 @@ class SettingsPage extends ConsumerWidget {
     });
     return Scaffold(
       appBar: AppBar(title: const Text('Einstellungen')),
-      body: Column(
-        children: [
-          SwitchListTile(
-              title: const Text('Dunkles Thema'),
-              value: ref.watch(themeProvider) == ThemeMode.dark,
-              onChanged: (value) {
-                ref.read(themeProvider.notifier).toggleTheme();
-              }),
-          const Divider(),
-          const Icon(Icons.person, size: 38),
-          Text(appUser.firstName),
-          Text(appUser.lastName),
-          const SizedBox(
-            height: 30,
-          ),
-          // ElevatedButton(
-          //     onPressed: () {
-          //       BetterFeedback.of(context).show((UserFeedback feedback) async {
-          //         try {
-          //           await Future.delayed(const Duration(milliseconds: 500));
-          //         } catch (e) {
-          //           print(e);
-          //         }
-          //       });
-          //     },
-          //     child: const Text("Fehler melden")),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(authProvider.notifier).logout();
-            },
-            child: const Text("Ausloggen"),
-          ),
-          const Spacer(),
-          ref.watch(appVersionProvider).when(
-                data: (data) => Text(data),
-                loading: () => const SizedBox.shrink(),
-                error: (err, stack) => const SizedBox.shrink(),
-              ),
-          const SizedBox(
-            height: 50,
-          )
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            SwitchListTile(
+                title: const Text('Dunkles Thema'),
+                value: ref.watch(themeProvider) == ThemeMode.dark,
+                onChanged: (value) {
+                  ref.read(themeProvider.notifier).toggleTheme();
+                }),
+            const Icon(Icons.person, size: 38),
+            Text(appUser.firstName),
+            Text(appUser.lastName),
+            const SizedBox(
+              height: 30,
+            ),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       BetterFeedback.of(context).show((UserFeedback feedback) async {
+            //         try {
+            //           await Future.delayed(const Duration(milliseconds: 500));
+            //         } catch (e) {
+            //           print(e);
+            //         }
+            //       });
+            //     },
+            //     child: const Text("Fehler melden")),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () {
+                ref.read(authProvider.notifier).logout();
+              },
+              child: Text("Ausloggen",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary)),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ref.watch(appVersionProvider).when(
+                  data: (data) => Text(data),
+                  loading: () => const SizedBox.shrink(),
+                  error: (err, stack) => const SizedBox.shrink(),
+                ),
+            const SizedBox(
+              height: 50,
+            )
+          ],
+        ),
       ),
     );
   }

@@ -8,19 +8,23 @@ class SplashPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(authCheckProvider).when(
-      data: (_) {
-        final authState = ref.read(authProvider);
-        if (authState == AuthState.unauthenticated) {
-          return LoginPage();
-        } else if (authState == AuthState.authenticated || authState == AuthState.anonymous) {
-          return const DefectReportPage(); 
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      child: ref.watch(authCheckProvider).when(
+            data: (_) {
+              final authState = ref.read(authProvider);
+              if (authState == AuthState.unauthenticated) {
+                return LoginPage();
+              } else if (authState == AuthState.authenticated ||
+                  authState == AuthState.anonymous) {
+                return const DefectReportPage();
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => Center(child: Text('Error: $err')),
+          ),
     );
   }
 }

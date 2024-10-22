@@ -36,11 +36,12 @@ class LoginPage extends ConsumerWidget {
     });
     var authState = ref.watch(authProvider);
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
-        title: const Text('Login'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Icons.settings, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -50,57 +51,94 @@ class LoginPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: ref.watch(userNameController),
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                  labelText: "Email",
-                  prefixIcon: const Icon(Icons.person),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.fire_truck,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  size: 100),
+              const SizedBox(height: 90),
+              TextField(
+                controller: ref.watch(userNameController),
+                keyboardType: TextInputType.emailAddress,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.inverseSurface,
+                ),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.inversePrimary,
+                  hintText: "Email",
+                  hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.inverseSurface),
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.surface),
+                  prefixIcon: Icon(Icons.person,
+                      color: Theme.of(context).colorScheme.inverseSurface),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: ref.watch(passwordController),
-              obscureText: true,
-              keyboardType: TextInputType.visiblePassword,
-              decoration: InputDecoration(
-                  labelText: "Passwort",
-                  prefixIcon: const Icon(Icons.lock),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: ref.watch(passwordController),
+                obscureText: true,
+                keyboardType: TextInputType.visiblePassword,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.inverseSurface,
+                ),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.inversePrimary,
+                  hintText: "Passwort",
+                  hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.inverseSurface),
+                  prefixIcon: Icon(Icons.lock,
+                      color: Theme.of(context).colorScheme.inverseSurface),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-            ),
-            const SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: () => ref.read(authProvider.notifier).login(
-                  ref.read(userNameController).text,
-                  ref.read(passwordController).text),
-              child: const Text("Login"),
-            ),
-            ElevatedButton(
-              onPressed: ref.read(authProvider.notifier).guestLogin,
-              child: const Text("Gast Login"),
-            ),
-            const SizedBox(height: 24.0),
-            authState == AuthState.loading
-                ? const CircularProgressIndicator()
-                : Container(),
-          ],
+              ),
+              const SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: () => ref.read(authProvider.notifier).login(
+                    ref.read(userNameController).text,
+                    ref.read(passwordController).text),
+                child: Text("Login",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimary)),
+              ),
+              const SizedBox(height: 10.0),
+              ElevatedButton(
+                  onPressed: ref.read(authProvider.notifier).guestLogin,
+                  child: Text("Gast Login",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimary))),
+              const SizedBox(height: 24.0),
+              Center(
+                child: SizedBox(
+                  child: authState == AuthState.loading
+                      ? CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        )
+                      : Container(),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

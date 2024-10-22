@@ -4,7 +4,6 @@ import 'package:firereport/notifier/notifier.dart';
 import 'package:firereport/utils/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 class DefectReportDetailPage extends ConsumerWidget {
   final DefectReport? report;
@@ -39,6 +38,7 @@ class DefectReportDetailPage extends ConsumerWidget {
           child: ListView(
             children: [
               Card(
+                color: Theme.of(context).colorScheme.secondary,
                 elevation: 2,
                 child: Column(
                   children: [
@@ -115,6 +115,7 @@ class DefectReportDetailPage extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
               Card(
+                color: Theme.of(context).colorScheme.secondary,
                 elevation: 2,
                 child: Column(
                   children: [
@@ -161,39 +162,29 @@ class DefectReportDetailPage extends ConsumerWidget {
                                           )
                                         : const Text("Keine Bilder vorhanden"),
                                     const SizedBox(height: 20),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        ElevatedButton(
-                                            onPressed: () =>
-                                                viewModel.pickImage(context,
-                                                    ImageSource.camera),
-                                            child: const Row(
-                                              children: [
-                                                Icon(
-                                                    Icons.add_a_photo_outlined),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text("Kamera"),
-                                              ],
-                                            )),
-                                        ElevatedButton(
-                                            onPressed: () =>
-                                                viewModel.pickImage(context,
-                                                    ImageSource.gallery),
-                                            child: const Row(
-                                              children: [
-                                                Icon(Icons
-                                                    .add_photo_alternate_outlined),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text("Galerie"),
-                                              ],
-                                            ))
-                                      ],
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          viewModel.addImage(context),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.add_a_photo_outlined,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            "Bild hinzufügen",
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimary),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 )
@@ -201,7 +192,12 @@ class DefectReportDetailPage extends ConsumerWidget {
                                   child: ElevatedButton(
                                     onPressed: viewModel.downloadImages,
                                     child: Text(
-                                        "Bilder herunterladen (${viewModel.report.lsImages.length})"),
+                                      "Bilder herunterladen (${viewModel.report.lsImages.length})",
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary),
+                                    ),
                                   ),
                                 ),
                     )
@@ -210,13 +206,18 @@ class DefectReportDetailPage extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      formKey.currentState!.save();
-                      Navigator.of(context).pop(viewModel.report);
-                    }
-                  },
-                  child: const Text("Speichern")),
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    formKey.currentState!.save();
+                    Navigator.of(context).pop(viewModel.report);
+                  }
+                },
+                child: Text(
+                  "Speichern",
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                ),
+              ),
             ],
           ),
         ),
@@ -283,7 +284,7 @@ class ReportImage extends StatelessWidget {
         }));
       },
       child: SizedBox(
-        height: 100,
+        height: 60,
         width: 100,
         child: Hero(
           tag: imageModel.id,
