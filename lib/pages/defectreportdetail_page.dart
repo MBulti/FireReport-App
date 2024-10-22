@@ -34,58 +34,14 @@ class DefectReportDetailPage extends ConsumerWidget {
           title: Text(index == null
               ? 'Neuer Mängelbericht'
               : 'Mängelbericht bearbeiten'),
-          bottom: TabBar(
-            tabAlignment: TabAlignment.center,
-            isScrollable: true,
-            indicatorColor: Colors.transparent,
+          bottom: const TabBar(
             tabs: [
               Tab(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(30), 
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.edit_document,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Eigenschaften',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
+                icon: Icon(Icons.edit_document),
               ),
               Tab(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.image,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Bilder',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
+                icon: Icon(Icons.image),
+                
               ),
             ],
           ),

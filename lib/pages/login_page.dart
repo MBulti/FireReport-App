@@ -74,14 +74,9 @@ class LoginPage extends ConsumerWidget {
                   hintText: "Email",
                   hintStyle: TextStyle(
                       color: Theme.of(context).colorScheme.inverseSurface),
-                  labelStyle:
-                      TextStyle(color: Theme.of(context).colorScheme.surface),
-                  prefixIcon: Icon(Icons.person,
-                      color: Theme.of(context).colorScheme.inverseSurface),
+                  prefixIcon: const Icon(Icons.person),
+                  prefixIconColor: Theme.of(context).colorScheme.inverseSurface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
@@ -100,12 +95,9 @@ class LoginPage extends ConsumerWidget {
                   hintText: "Passwort",
                   hintStyle: TextStyle(
                       color: Theme.of(context).colorScheme.inverseSurface),
-                  prefixIcon: Icon(Icons.lock,
-                      color: Theme.of(context).colorScheme.inverseSurface),
+                  prefixIcon: const Icon(Icons.lock),
+                  prefixIconColor: Theme.of(context).colorScheme.inverseSurface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
@@ -115,18 +107,23 @@ class LoginPage extends ConsumerWidget {
                 onPressed: () => ref.read(authProvider.notifier).login(
                     ref.read(userNameController).text,
                     ref.read(passwordController).text),
-                child: Text("Login",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimary)),
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary),
+                ),
               ),
               const SizedBox(height: 10.0),
               ElevatedButton(
-                  onPressed: ref.read(authProvider.notifier).guestLogin,
-                  child: Text("Gast Login",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimary))),
+                onPressed: ref.read(authProvider.notifier).guestLogin,
+                child: Text(
+                  "Gast Login",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary),
+                ),
+              ),
               const SizedBox(height: 24.0),
               Center(
                 child: SizedBox(
