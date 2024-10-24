@@ -37,11 +37,10 @@ class DefectReportDetailPage extends ConsumerWidget {
           bottom: const TabBar(
             tabs: [
               Tab(
-                icon: Icon(Icons.edit_document),
+                text: "Eigenschaften",
               ),
               Tab(
-                icon: Icon(Icons.image),
-                
+                text: "Bilder",
               ),
             ],
           ),

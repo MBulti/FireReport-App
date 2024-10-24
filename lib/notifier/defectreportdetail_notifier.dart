@@ -24,6 +24,7 @@ class DefectReportDetailNotifier extends ChangeNotifier {
       title: "",
       description: "",
       status: ReportState.open,
+      lsImages: [],
     );
         if (_report.dueDate != null && _report.dueDate!.isBefore(DateTime.now())) {
       firstDate = _report.dueDate!;
