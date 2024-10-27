@@ -52,31 +52,9 @@ class DefectReportPage extends ConsumerWidget {
                       labelStyle: TextStyle(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.secondary,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.onSecondary,
-                        ),
-                      ),
+                      focusedBorder: InputBorder.none,
+                      border: InputBorder.none,
                     ),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
-                    dropdownColor: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
                 // Report List

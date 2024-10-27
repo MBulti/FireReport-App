@@ -1,4 +1,5 @@
 import 'package:firereport/notifier/notifier.dart';
+import 'package:firereport/utils/controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'pages.dart';
@@ -41,7 +42,7 @@ class LoginPage extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
+            icon: Icon(Icons.settings, color: Theme.of(context).colorScheme.onPrimary),
             onPressed: () {
               Navigator.push(
                 context,
@@ -61,68 +62,36 @@ class LoginPage extends ConsumerWidget {
               Icon(Icons.fire_truck,
                   color: Theme.of(context).colorScheme.inversePrimary,
                   size: 100),
-              const SizedBox(height: 90),
-              TextField(
-                controller: ref.watch(userNameController),
-                keyboardType: TextInputType.emailAddress,
+              const SizedBox(height: 40),
+              Text(
+                'Anmeldung',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.inverseSurface,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              const SizedBox(height: 20),
+              TextInputField(
+                  isPassword: false,
                   hintText: "Email",
-                  hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.inverseSurface),
-                  prefixIcon: const Icon(Icons.person),
-                  prefixIconColor: Theme.of(context).colorScheme.inverseSurface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
+                  controller: ref.watch(userNameController)),
               const SizedBox(height: 16),
-              TextField(
-                controller: ref.watch(passwordController),
-                obscureText: true,
-                keyboardType: TextInputType.visiblePassword,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.inverseSurface,
-                ),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.inversePrimary,
+              TextInputField(
+                  isPassword: true,
                   hintText: "Passwort",
-                  hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.inverseSurface),
-                  prefixIcon: const Icon(Icons.lock),
-                  prefixIconColor: Theme.of(context).colorScheme.inverseSurface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
+                  controller: ref.watch(passwordController)),
               const SizedBox(height: 24.0),
-              ElevatedButton(
+              Button(
                 onPressed: () => ref.read(authProvider.notifier).login(
                     ref.read(userNameController).text,
                     ref.read(passwordController).text),
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimary),
-                ),
+                text: "Login",
               ),
               const SizedBox(height: 10.0),
-              ElevatedButton(
+              Button(
                 onPressed: ref.read(authProvider.notifier).guestLogin,
-                child: Text(
-                  "Gast Login",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimary),
-                ),
+                text: "Gast Login",
               ),
               const SizedBox(height: 24.0),
               Center(
@@ -136,6 +105,53 @@ class LoginPage extends ConsumerWidget {
               )
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class TextInputField extends StatelessWidget {
+  final bool isPassword;
+  final String hintText;
+  final TextEditingController controller;
+  const TextInputField(
+      {super.key,
+      required this.isPassword,
+      required this.hintText,
+      required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      cursorColor: Theme.of(context).colorScheme.inverseSurface,
+      obscureText: isPassword,
+      controller: controller,
+      keyboardType: isPassword
+          ? TextInputType.visiblePassword
+          : TextInputType.emailAddress,
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.inverseSurface,
+      ),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.inversePrimary,
+        hintText: hintText,
+        hintStyle:
+            TextStyle(color: Theme.of(context).colorScheme.inverseSurface),
+        prefixIcon: const Icon(Icons.person),
+        prefixIconColor: Theme.of(context).colorScheme.inverseSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
         ),
       ),
     );

@@ -39,6 +39,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> login(String userName, String password) async {
     try {
       state = AuthState.loading;
+      await Future.delayed(const Duration(seconds: 1));
       await APIClient.login(userName, password);
       state = AuthState.authenticated;
     } on AuthException {
@@ -50,6 +51,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> guestLogin() async {
     try {
       state = AuthState.loading;
+      await Future.delayed(const Duration(seconds: 1));
       await APIClient.loginAnonymously();
       state = AuthState.anonymous;
     } on AuthException catch (e) {

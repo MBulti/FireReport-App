@@ -1,6 +1,7 @@
 import 'package:firereport/models/models.dart';
 import 'package:firereport/notifier/defectreportdetail_notifier.dart';
 import 'package:firereport/notifier/notifier.dart';
+import 'package:firereport/utils/controls.dart';
 import 'package:firereport/utils/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -127,18 +128,14 @@ class DefectReportDetailPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      ElevatedButton(
+                      Button(
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
                             formKey.currentState!.save();
                             Navigator.of(context).pop(viewModel.report);
                           }
                         },
-                        child: Text(
-                          "Speichern",
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary),
-                        ),
+                        text: "Mängelbericht speichern",
                       ),
                     ],
                   ),
@@ -153,7 +150,7 @@ class DefectReportDetailPage extends ConsumerWidget {
                         child: Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                              padding: const EdgeInsets.all(8),
                               child: viewModel.isLoadImagesInProgress
                                   ? const Center(
                                       child: Column(
@@ -194,46 +191,20 @@ class DefectReportDetailPage extends ConsumerWidget {
                                                   )
                                                 : const Text(
                                                     "Keine Bilder vorhanden"),
-                                            const SizedBox(height: 20),
-                                            ElevatedButton(
+                                            const SizedBox(height: 10),
+                                            Button(
                                               onPressed: () =>
                                                   viewModel.addImage(context),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                      Icons
-                                                          .add_a_photo_outlined,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onPrimary),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    "Bild hinzufügen",
-                                                    style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onPrimary),
-                                                  ),
-                                                ],
-                                              ),
+                                              text: "Neues Bild",
                                             ),
                                           ],
                                         )
                                       : Center(
-                                          child: ElevatedButton(
-                                            onPressed: viewModel.downloadImages,
-                                            child: Text(
-                                              "Bilder herunterladen (${viewModel.report.lsImages.length})",
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimary),
-                                            ),
-                                          ),
+                                          child: Button(
+                                              onPressed:
+                                                  viewModel.downloadImages,
+                                              text:
+                                                  "Bilder herunterladen (${viewModel.report.lsImages.length})"),
                                         ),
                             )
                           ],
@@ -331,10 +302,12 @@ class ImageFullScreenPage extends StatelessWidget {
         onTap: () {
           Navigator.pop(context);
         },
-        child: Center(
-          child: Hero(
-            tag: imageModel.id,
-            child: Image.memory(imageModel.imageBytes!),
+        child: InteractiveViewer(
+          child: Center(
+            child: Hero(
+              tag: imageModel.id,
+              child: Image.memory(imageModel.imageBytes!),
+            ),
           ),
         ),
       ),

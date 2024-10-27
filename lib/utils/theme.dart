@@ -15,18 +15,6 @@ ThemeData lightTheme = ThemeData(
     inversePrimary: Color(0xFFFFFFFF),
     inverseSurface: Color(0xFF191919),
   ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      minimumSize: const Size.fromHeight(46),
-      backgroundColor: const Color(0xFFCF1C34),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-        side: const BorderSide(
-          color: Color(0xFFFFFFFF),
-        ),
-      ),
-    ),
-  ),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -43,17 +31,5 @@ ThemeData darkTheme = ThemeData(
     onSurface: Color(0xFFFFFFFF),
     inversePrimary: Color(0xFFF3F3F3),
     inverseSurface: Color(0xFF3E3E40),
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      minimumSize: const Size.fromHeight(46),
-      backgroundColor: const Color(0xFFB5192E),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-        side: const BorderSide(
-          color: Color(0xFFFFFFFF),
-        ),
-      ),
-    ),
   ),
 );

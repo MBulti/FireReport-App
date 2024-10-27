@@ -1,5 +1,6 @@
 import 'package:firereport/notifier/notifier.dart';
 import 'package:firereport/services/services.dart';
+import 'package:firereport/utils/controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'pages.dart';
@@ -36,9 +37,7 @@ class SettingsPage extends ConsumerWidget {
             const Icon(Icons.person, size: 38),
             Text(appUser.firstName),
             Text(appUser.lastName),
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             // ElevatedButton(
             //     onPressed: () {
             //       BetterFeedback.of(context).show((UserFeedback feedback) async {
@@ -51,26 +50,32 @@ class SettingsPage extends ConsumerWidget {
             //     },
             //     child: const Text("Fehler melden")),
             const Spacer(),
-            ElevatedButton(
+
+            InvertedButton(
               onPressed: () {
                 ref.read(authProvider.notifier).logout();
               },
-              child: Text("Ausloggen",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimary)),
+              text: "Ausloggen",
             ),
-            const SizedBox(
-              height: 20,
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const PrivacyPolicyPage())),
+              child: const Text("Datenschutzerklärung"),
             ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const ImprintPage())),
+              child: const Text("Impressum"),
+            ),
+            const SizedBox(height: 10),
             ref.watch(appVersionProvider).when(
                   data: (data) => Text(data),
                   loading: () => const SizedBox.shrink(),
                   error: (err, stack) => const SizedBox.shrink(),
                 ),
-            const SizedBox(
-              height: 50,
-            )
+            const SizedBox(height: 50)
           ],
         ),
       ),

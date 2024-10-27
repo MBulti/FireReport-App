@@ -19,14 +19,16 @@ class DefectReportDetailNotifier extends ChangeNotifier {
   }
 
   DefectReportDetailNotifier(this.defectReportService, DefectReport? report) {
-    _report = report ?? DefectReport(
-      id: DateTime.now().millisecondsSinceEpoch,
-      title: "",
-      description: "",
-      status: ReportState.open,
-      lsImages: [],
-    );
-        if (_report.dueDate != null && _report.dueDate!.isBefore(DateTime.now())) {
+    _report = report != null
+        ? report.copyWith()
+        : DefectReport(
+            id: DateTime.now().millisecondsSinceEpoch,
+            title: "",
+            description: "",
+            status: ReportState.open,
+            lsImages: [],
+          );
+    if (_report.dueDate != null && _report.dueDate!.isBefore(DateTime.now())) {
       firstDate = _report.dueDate!;
     } else {
       firstDate = DateTime.now();
@@ -59,28 +61,30 @@ class DefectReportDetailNotifier extends ChangeNotifier {
   }
 
   Future<void> addImage(BuildContext context) async {
-    showModalBottomSheet(context: context, builder: (context) {
-      return Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.add_a_photo_outlined),
-              title: const Text('Kamera'),
-              onTap: () {
-                Navigator.pop(context);
-                pickImage(context, ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.add_photo_alternate_outlined),
-              title: const Text('Galerie'),
-              onTap: () {
-                Navigator.pop(context);
-                pickImage(context, ImageSource.gallery);
-              },
-            ),
-          ],
-        );
-    });
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.add_a_photo_outlined),
+                title: const Text('Kamera'),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(context, ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_photo_alternate_outlined),
+                title: const Text('Galerie'),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(context, ImageSource.gallery);
+                },
+              ),
+            ],
+          );
+        });
   }
 
   Future<void> pickImage(BuildContext context, ImageSource source) async {
@@ -91,7 +95,8 @@ class DefectReportDetailNotifier extends ChangeNotifier {
       final image = ImageModel(
         id: DateTime.now().millisecondsSinceEpoch,
         reportId: _report.id,
-        url: "report_${_report.id}_${DateTime.now().millisecondsSinceEpoch}.$fileExtension",
+        url:
+            "report_${_report.id}_${DateTime.now().millisecondsSinceEpoch}.$fileExtension",
         imageBytes: await pickedFile.readAsBytes(),
       );
       _report.lsImages.add(image);
