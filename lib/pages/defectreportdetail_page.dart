@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DefectReportDetailPage extends ConsumerWidget {
-  final DefectReport? report;
-  final List<AppUser> lsUsers;
+  final DefectReportModel? report;
+  final List<AppUserModel> lsUsers;
   final int? index;
 
   const DefectReportDetailPage({
@@ -24,9 +24,12 @@ class DefectReportDetailPage extends ConsumerWidget {
     final formKey = GlobalKey<FormState>();
 
     final userItems = [
-      AppUser(id: null, firstName: "Kein Benutzer", lastName: ""),
+      AppUserModel(id: null, firstName: "Kein Benutzer", lastName: ""),
       ...lsUsers
     ];
+    final createdUser = lsUsers
+        .where((user) => user.id == viewModel.report.createdBy)
+        .firstOrNull;
 
     return DefaultTabController(
       length: 2,
@@ -127,6 +130,9 @@ class DefectReportDetailPage extends ConsumerWidget {
                           ],
                         ),
                       ),
+                      if (createdUser != null)
+                        Text(
+                            "Erstellt von: ${createdUser.firstName} ${createdUser.lastName}"),
                       const SizedBox(height: 20),
                       Button(
                         onPressed: () {
@@ -223,7 +229,7 @@ class DefectReportDetailPage extends ConsumerWidget {
 }
 
 class DropdownStatus extends StatelessWidget {
-  final DefectReport report;
+  final DefectReportModel report;
 
   const DropdownStatus({super.key, required this.report});
 
@@ -231,7 +237,12 @@ class DropdownStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<ReportState>(
       value: report.status,
-      decoration: const InputDecoration(labelText: "Status"),
+      decoration: InputDecoration(
+        labelText: "Status",
+        labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+        focusedBorder: InputBorder.none,
+        border: InputBorder.none,
+      ),
       items: ReportState.values.map((status) {
         return DropdownMenuItem(
             value: status, child: Text(formatReportState(status)));
@@ -244,18 +255,23 @@ class DropdownStatus extends StatelessWidget {
 }
 
 class DropdownUser extends StatelessWidget {
-  final List<AppUser> userItems;
-  final DefectReport report;
+  final List<AppUserModel> userItems;
+  final DefectReportModel report;
 
   const DropdownUser(
       {super.key, required this.userItems, required this.report});
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<AppUser>(
+    return DropdownButtonFormField<AppUserModel>(
       value:
           userItems.where((user) => user.id == report.assignedUser).firstOrNull,
-      decoration: const InputDecoration(labelText: "Zugewiesener Benutzer"),
+      decoration: InputDecoration(
+        labelText: "Zugewiesener Benutzer",
+        labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+        focusedBorder: InputBorder.none,
+        border: InputBorder.none,
+      ),
       items: userItems.map((user) {
         return DropdownMenuItem(
             value: user, child: Text('${user.firstName} ${user.lastName}'));

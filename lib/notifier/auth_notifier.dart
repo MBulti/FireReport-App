@@ -14,9 +14,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   // Get the current user or a default guest user
-  AppUser get user {
+  AppUserModel get user {
     return APIClient.currentUser ??
-        AppUser(id: "", firstName: "Gast", lastName: "");
+        AppUserModel(id: "", firstName: "Gast", lastName: "");
   }
 
   // Check the login status of the user
@@ -27,7 +27,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (Supabase.instance.client.auth.currentSession!.user.isAnonymous) {
         state = AuthState.anonymous;
       } else {
-        APIClient.setCurrentUser(Supabase.instance.client.auth.currentUser!);
+        await APIClient.setCurrentUser(Supabase.instance.client.auth.currentUser!);
         state = AuthState.authenticated;
       }
     } else {

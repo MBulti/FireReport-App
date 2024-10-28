@@ -11,6 +11,7 @@ class DefectReportPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(defectReportNotifierProvider);
+    final filteredReports = ref.watch(filteredDefectReportProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -35,7 +36,8 @@ class DefectReportPage extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButtonFormField<FilterStatus>(
-                    value: viewModel.filterStatus,
+                    value: ref.watch(
+                        filterStatusProvider), // Aktuellen Filterstatus anzeigen
                     items: FilterStatus.values.map((status) {
                       return DropdownMenuItem(
                         value: status,
@@ -43,9 +45,7 @@ class DefectReportPage extends ConsumerWidget {
                       );
                     }).toList(),
                     onChanged: (newValue) {
-                      ref
-                          .read(defectReportNotifierProvider.notifier)
-                          .setFilter(newValue!);
+                      ref.read(filterStatusProvider.notifier).state = newValue!;
                     },
                     decoration: InputDecoration(
                       labelText: 'Nach Status filtern',
@@ -70,15 +70,9 @@ class DefectReportPage extends ConsumerWidget {
                                     .fetchReports();
                               },
                               child: ListView.builder(
-                                itemCount: ref
-                                    .read(defectReportNotifierProvider.notifier)
-                                    .filteredReports
-                                    .length,
+                                itemCount: filteredReports.length,
                                 itemBuilder: (context, index) {
-                                  final report = ref
-                                      .read(
-                                          defectReportNotifierProvider.notifier)
-                                      .filteredReports[index];
+                                  final report = filteredReports[index];
 
                                   return GestureDetector(
                                     onTap: () async {
@@ -133,15 +127,21 @@ class DefectReportPage extends ConsumerWidget {
 }
 
 class DefectReportListItem extends StatelessWidget {
-  final DefectReport report;
+  final DefectReportModel report;
   const DefectReportListItem({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
+    final Color backgroundColor = report.isNew
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).colorScheme.secondary;
+    final Color textColor = report.isNew
+        ? Theme.of(context).colorScheme.onError
+        : Theme.of(context).colorScheme.onSecondary;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Card(
-        color: Theme.of(context).colorScheme.secondary,
+        color: backgroundColor,
         elevation: 2,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -150,16 +150,20 @@ class DefectReportListItem extends StatelessWidget {
             children: [
               Text(
                 report.title,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 18.0),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                    color: textColor),
               ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Status: ${formatReportState(report.status)}'),
+                  Text('Status: ${formatReportState(report.status)}',
+                      style: TextStyle(color: textColor)),
                   Text(
-                      'Fällig am: ${report.dueDate != null ? formatDate(report.dueDate!.toLocal()) : 'Kein Datum'}'),
+                      'Fällig am: ${report.dueDate != null ? formatDate(report.dueDate!.toLocal()) : 'Kein Datum'}',
+                      style: TextStyle(color: textColor)),
                 ],
               ),
             ],

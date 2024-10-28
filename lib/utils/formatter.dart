@@ -28,6 +28,8 @@ String formatFilterState(FilterStatus status) {
       return "Abgeschlossen";
     case FilterStatus.assignedToMe:
       return "Mir zugewiesen";
+    case FilterStatus.createdByMe:
+      return "Von mir erstellt";
     default:
       return "Alle";
   }

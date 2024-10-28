@@ -3,15 +3,25 @@ import 'package:firereport/utils/api_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DefectReportService {
-  Future<List<DefectReport>> fetchDefectReports() async {
-    return await APIClient.getDefectReports();
+  Future<List<DefectReportModel>> fetchDefectReports() async {
+    try {
+      return await APIClient.getDefectReports();
+    } catch (e) {
+      await APIClient.addLog(e.toString());
+      return [];
+    }
   }
 
-  Future<List<AppUser>> fetchUsers() async {
-    return await APIClient.getUsers();
+  Future<List<AppUserModel>> fetchUsers() async {
+    try {
+      return await APIClient.getUsers();
+    } catch (e) {
+      await APIClient.addLog(e.toString());
+      return [];
+    }
   }
 
-  Future<void> upsertDefectReport(DefectReport report) async {
+  Future<void> upsertDefectReport(DefectReportModel report) async {
     if (report.lsImages.isNotEmpty) {
       for (var image in report.lsImages) {
         if (image.dtLastModified == null) {
@@ -21,6 +31,11 @@ class DefectReportService {
       }
     }
     await APIClient.upsertDefectReport(report);
+    if (report.isNotifyUser) {
+      await APIClient.addReportNotification(report.id);
+    } else {
+      await APIClient.deleteReportNotification(report.id);
+    }
   }
 
   Future<ImageModel> downloadImage(ImageModel image) async {

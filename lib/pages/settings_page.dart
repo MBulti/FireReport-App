@@ -63,10 +63,9 @@ class SettingsPage extends ConsumerWidget {
                   builder: (context) => const PrivacyPolicyPage())),
               child: const Text("Datenschutzerklärung"),
             ),
-            const SizedBox(height: 10),
             GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const ImprintPage())),
+              onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ImprintPage())),
               child: const Text("Impressum"),
             ),
             const SizedBox(height: 10),
@@ -75,6 +74,7 @@ class SettingsPage extends ConsumerWidget {
                   loading: () => const SizedBox.shrink(),
                   error: (err, stack) => const SizedBox.shrink(),
                 ),
+            const Text("© 2024 Moritz Bulthaup. Alle Rechte vorbehalten."),
             const SizedBox(height: 50)
           ],
         ),

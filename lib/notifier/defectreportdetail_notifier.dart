@@ -3,30 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firereport/models/models.dart';
 import 'package:image_picker/image_picker.dart';
+import 'notifier.dart';
 
 class DefectReportDetailNotifier extends ChangeNotifier {
   final DefectReportService defectReportService;
-  late DefectReport _report;
+  late DefectReportModel _report;
   late DateTime firstDate;
   bool isLoadImagesInProgress = false;
   bool isImagesFetched = false;
 
-  DefectReport get report => _report;
+  DefectReportModel get report => _report;
 
   void setNotifyUser(bool notifyUser) {
     _report.isNotifyUser = notifyUser;
     notifyListeners();
   }
 
-  DefectReportDetailNotifier(this.defectReportService, DefectReport? report) {
+  DefectReportDetailNotifier(this.defectReportService, DefectReportModel? report, String? user) {
     _report = report != null
         ? report.copyWith()
-        : DefectReport(
+        : DefectReportModel(
             id: DateTime.now().millisecondsSinceEpoch,
             title: "",
             description: "",
             status: ReportState.open,
             lsImages: [],
+            createdBy: user,
           );
     if (_report.dueDate != null && _report.dueDate!.isBefore(DateTime.now())) {
       firstDate = _report.dueDate!;
@@ -106,9 +108,10 @@ class DefectReportDetailNotifier extends ChangeNotifier {
 }
 
 final defectReportDetailProvider = ChangeNotifierProvider.autoDispose
-    .family<DefectReportDetailNotifier, DefectReport?>(
+    .family<DefectReportDetailNotifier, DefectReportModel?>(
   (ref, report) {
     final defectReportService = ref.read(defectReportServiceProvider);
-    return DefectReportDetailNotifier(defectReportService, report);
+    final user = ref.read(authProvider.notifier).user.id;
+    return DefectReportDetailNotifier(defectReportService, report, user);
   },
 );
