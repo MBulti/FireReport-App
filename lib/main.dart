@@ -30,24 +30,5 @@ class MyApp extends ConsumerWidget {
           GlobalWidgetsLocalizations.delegate
         ],
         home: const SplashPage());
-
-    //   return BetterFeedback(
-    //     localizationsDelegates: [
-    //       GlobalFeedbackLocalizationsDelegate(),
-    //     ],
-    //     themeMode: ThemeMode.light,
-    //     theme: feedbackLightTheme,
-    //     child: MaterialApp(
-    //         title: 'FireReport',
-    //         debugShowCheckedModeBanner: false,
-    //         theme: lightTheme,
-    //         darkTheme: darkTheme,
-    //         themeMode: ref.watch(themeProvider),
-    //         localizationsDelegates: const [
-    //           GlobalMaterialLocalizations.delegate,
-    //           GlobalWidgetsLocalizations.delegate
-    //         ],
-    //         home: const SplashPage()),
-    //   );
   }
 }

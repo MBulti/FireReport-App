@@ -56,10 +56,6 @@ class DefectReportNotifier extends ChangeNotifier {
 final defectReportNotifierProvider =
     ChangeNotifierProvider((ref) => DefectReportNotifier(ref));
 
-// Provider für den FilterStatus
-final filterStatusProvider =
-    StateProvider<FilterStatus>((ref) => FilterStatus.all);
-
 // Gefilterte Liste basierend auf dem FilterStatus
 final filteredDefectReportProvider = Provider<List<DefectReportModel>>((ref) {
   final filter = ref.watch(filterStatusProvider);

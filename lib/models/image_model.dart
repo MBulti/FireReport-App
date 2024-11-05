@@ -26,4 +26,14 @@ class ImageModel {
       'dt_lastmodified': dtLastModified?.toIso8601String(),
     };
   }
+
+  ImageModel copyWith({int? id, int? reportId, String? url, Uint8List? imageBytes, DateTime? dtLastModified}) {
+    return ImageModel(
+      id: id ?? this.id,
+      reportId: reportId ?? this.reportId,
+      url: url ?? this.url,
+      imageBytes: imageBytes ?? this.imageBytes,
+      dtLastModified: dtLastModified ?? this.dtLastModified,
+    );
+  }
 }

@@ -55,7 +55,9 @@ class DefectReportDetailNotifier extends ChangeNotifier {
     isLoadImagesInProgress = true;
     notifyListeners();
     for (var image in _report.lsImages) {
-      image = await defectReportService.downloadImage(image);
+      if (image.dtLastModified != null) {
+        image = await defectReportService.downloadImage(image);
+      }
     }
     isLoadImagesInProgress = false;
     isImagesFetched = true;
@@ -66,25 +68,28 @@ class DefectReportDetailNotifier extends ChangeNotifier {
     showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.add_a_photo_outlined),
-                title: const Text('Kamera'),
-                onTap: () {
-                  Navigator.pop(context);
-                  pickImage(context, ImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.add_photo_alternate_outlined),
-                title: const Text('Galerie'),
-                onTap: () {
-                  Navigator.pop(context);
-                  pickImage(context, ImageSource.gallery);
-                },
-              ),
-            ],
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.add_a_photo_outlined),
+                  title: const Text('Kamera'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    pickImage(context, ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.add_photo_alternate_outlined),
+                  title: const Text('Galerie'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    pickImage(context, ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
           );
         });
   }

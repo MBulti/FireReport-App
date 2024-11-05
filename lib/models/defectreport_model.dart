@@ -72,7 +72,14 @@ class DefectReportModel {
       dueDate: dueDate ?? this.dueDate,
       isNotifyUser: isNotifyUser ?? this.isNotifyUser,
       isNew: isNew ?? this.isNew,
-      lsImages: lsImages ?? this.lsImages
+      lsImages: lsImages ?? copyWithImages(this.lsImages),
     );
+  }
+
+  List<ImageModel> copyWithImages(List<ImageModel>? lsImages) {
+    if (lsImages == null || lsImages.isEmpty) {
+      return [];
+    }
+    return lsImages.map((image) => image.copyWith()).toList();
   }
 }

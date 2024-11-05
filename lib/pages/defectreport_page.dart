@@ -30,78 +30,7 @@ class DefectReportPage extends ConsumerWidget {
       ),
       body: viewModel.isSaveInProgress
           ? const DefectReportSaving()
-          : Column(
-              children: [
-                // Filter Dropdown
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButtonFormField<FilterStatus>(
-                    value: ref.watch(
-                        filterStatusProvider), // Aktuellen Filterstatus anzeigen
-                    items: FilterStatus.values.map((status) {
-                      return DropdownMenuItem(
-                        value: status,
-                        child: Text(formatFilterState(status)),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      ref.read(filterStatusProvider.notifier).state = newValue!;
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Nach Status filtern',
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSecondary,
-                      ),
-                      focusedBorder: InputBorder.none,
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                // Report List
-                Expanded(
-                  child: viewModel.isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : viewModel.errorMessage != null
-                          ? Center(child: Text(viewModel.errorMessage!))
-                          : RefreshIndicator(
-                              onRefresh: () async {
-                                await ref
-                                    .read(defectReportNotifierProvider.notifier)
-                                    .fetchReports();
-                              },
-                              child: ListView.builder(
-                                itemCount: filteredReports.length,
-                                itemBuilder: (context, index) {
-                                  final report = filteredReports[index];
-
-                                  return GestureDetector(
-                                    onTap: () async {
-                                      var updatedReport = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              DefectReportDetailPage(
-                                            report: report,
-                                            index: index,
-                                            lsUsers: viewModel.users,
-                                          ),
-                                        ),
-                                      );
-                                      if (updatedReport != null) {
-                                        ref
-                                            .read(defectReportNotifierProvider
-                                                .notifier)
-                                            .upsertReport(updatedReport);
-                                      }
-                                    },
-                                    child: DefectReportListItem(report: report),
-                                  );
-                                },
-                              ),
-                            ),
-                ),
-              ],
-            ),
+          : DefectReportBody(viewModel: viewModel, filteredReports: filteredReports),
       floatingActionButton: ref.read(authProvider.notifier).isAnonymousUser
           ? null
           : FloatingActionButton(
@@ -123,6 +52,93 @@ class DefectReportPage extends ConsumerWidget {
               child: const Icon(Icons.add),
             ),
     );
+  }
+}
+
+class DefectReportBody extends ConsumerWidget {
+  const DefectReportBody({
+    super.key,
+    required this.viewModel,
+    required this.filteredReports,
+  });
+
+  final DefectReportNotifier viewModel;
+  final List<DefectReportModel> filteredReports;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+        children: [
+          // Filter Dropdown
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButtonFormField<FilterStatus>(
+              value: ref.watch(
+                  filterStatusProvider), // Aktuellen Filterstatus anzeigen
+              items: FilterStatus.values.map((status) {
+                return DropdownMenuItem(
+                  value: status,
+                  child: Text(formatFilterState(status)),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                ref.read(filterStatusProvider.notifier).setFilter(newValue!);
+              },
+              decoration: InputDecoration(
+                labelText: 'Nach Status filtern',
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                focusedBorder: InputBorder.none,
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+          // Report List
+          Expanded(
+            child: viewModel.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : viewModel.errorMessage != null
+                    ? Center(child: Text(viewModel.errorMessage!))
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          await ref
+                              .read(defectReportNotifierProvider.notifier)
+                              .fetchReports();
+                        },
+                        child: ListView.builder(
+                          itemCount: filteredReports.length,
+                          itemBuilder: (context, index) {
+                            final report = filteredReports[index];
+    
+                            return GestureDetector(
+                              onTap: () async {
+                                var updatedReport = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        DefectReportDetailPage(
+                                      report: report,
+                                      index: index,
+                                      lsUsers: viewModel.users,
+                                    ),
+                                  ),
+                                );
+                                if (updatedReport != null) {
+                                  ref
+                                      .read(defectReportNotifierProvider
+                                          .notifier)
+                                      .upsertReport(updatedReport);
+                                }
+                              },
+                              child: DefectReportListItem(report: report),
+                            );
+                          },
+                        ),
+                      ),
+          ),
+        ],
+      );
   }
 }
 

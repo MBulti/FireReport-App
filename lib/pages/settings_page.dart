@@ -37,20 +37,7 @@ class SettingsPage extends ConsumerWidget {
             const Icon(Icons.person, size: 38),
             Text(appUser.firstName),
             Text(appUser.lastName),
-            const SizedBox(height: 30),
-            // ElevatedButton(
-            //     onPressed: () {
-            //       BetterFeedback.of(context).show((UserFeedback feedback) async {
-            //         try {
-            //           await Future.delayed(const Duration(milliseconds: 500));
-            //         } catch (e) {
-            //           print(e);
-            //         }
-            //       });
-            //     },
-            //     child: const Text("Fehler melden")),
             const Spacer(),
-
             InvertedButton(
               onPressed: () {
                 ref.read(authProvider.notifier).logout();
