@@ -49,6 +49,15 @@ class DefectReportDetailPage extends ConsumerWidget {
             ],
           ),
         ),
+        floatingActionButton: Button(
+          onPressed: () {
+            if (formKey.currentState!.validate()) {
+              formKey.currentState!.save();
+              Navigator.of(context).pop(viewModel.report);
+            }
+          },
+          text: index == null ? "Erstellen" : "Änderungen speicherm",
+        ),
         body: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Column(
@@ -57,22 +66,16 @@ class DefectReportDetailPage extends ConsumerWidget {
                 child: TabBarView(
                   children: [
                     // First Tab: Eigenschaften (Properties)
-                    TabProperties(formKey: formKey, viewModel: viewModel, userItems: userItems, createdUser: createdUser),
+                    TabProperties(
+                        formKey: formKey,
+                        viewModel: viewModel,
+                        userItems: userItems,
+                        createdUser: createdUser),
                     // Second Tab: Bilder (Images)
                     TabImages(viewModel: viewModel),
                   ],
                 ),
               ),
-              Button(
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    formKey.currentState!.save();
-                    Navigator.of(context).pop(viewModel.report);
-                  }
-                },
-                text: "Mängelbericht speichern",
-              ),
-              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -120,25 +123,21 @@ class TabProperties extends StatelessWidget {
                             viewModel.report.title = value!;
                           },
                           validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
+                            if (value == null || value.trim().isEmpty) {
                               return 'Bitte einen Titel eingeben';
                             }
                             return null;
                           },
                         ),
                         TextFormField(
-                          initialValue:
-                              viewModel.report.description,
-                          decoration: const InputDecoration(
-                              labelText: "Beschreibung"),
+                          initialValue: viewModel.report.description,
+                          decoration:
+                              const InputDecoration(labelText: "Beschreibung"),
                           onSaved: (value) {
-                            viewModel.report.description =
-                                value!;
+                            viewModel.report.description = value!;
                           },
                           validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
+                            if (value == null || value.trim().isEmpty) {
                               return 'Bitte eine Beschreibung eingeben';
                             }
                             return null;
@@ -147,30 +146,23 @@ class TabProperties extends StatelessWidget {
                           minLines: 3,
                           keyboardType: TextInputType.multiline,
                         ),
-                        DropdownStatus(
-                            report: viewModel.report),
+                        DropdownStatus(report: viewModel.report),
                         const SizedBox(height: 10),
                         DropdownUser(
-                            userItems: userItems,
-                            report: viewModel.report),
+                            userItems: userItems, report: viewModel.report),
                         const SizedBox(height: 10),
                         ListTile(
-                          title: Text(viewModel
-                                      .report.dueDate ==
-                                  null
+                          title: Text(viewModel.report.dueDate == null
                               ? 'Bitte Fälligkeitsdatum auswählen'
                               : 'Datum: ${formatDate(viewModel.report.dueDate!.toLocal())}'),
-                          trailing:
-                              const Icon(Icons.calendar_today),
-                          onTap: () =>
-                              viewModel.selectDueDate(context),
+                          trailing: const Icon(Icons.calendar_today),
+                          onTap: () => viewModel.selectDueDate(context),
                         ),
                         const SizedBox(height: 10),
                         SwitchListTile(
                             title: const Text(
                                 "Benachrichtige mich bei Änderungen"),
-                            value:
-                                viewModel.report.isNotifyUser,
+                            value: viewModel.report.isNotifyUser,
                             onChanged: (value) {
                               viewModel.setNotifyUser(value);
                             }),
@@ -225,9 +217,7 @@ class TabImages extends StatelessWidget {
                           ? Column(
                               children: [
                                 viewModel.report.lsImages
-                                        .where((x) =>
-                                            x.imageBytes !=
-                                            null)
+                                        .where((x) => x.imageBytes != null)
                                         .isNotEmpty
                                     ? GridView.builder(
                                         shrinkWrap: true,
@@ -240,33 +230,25 @@ class TabImages extends StatelessWidget {
                                           crossAxisSpacing: 4.0,
                                           childAspectRatio: 1.0,
                                         ),
-                                        itemCount: viewModel
-                                            .report
-                                            .lsImages
-                                            .length,
-                                        itemBuilder:
-                                            (context, index) {
+                                        itemCount:
+                                            viewModel.report.lsImages.length,
+                                        itemBuilder: (context, index) {
                                           return ReportImage(
                                               imageModel: viewModel
-                                                      .report
-                                                      .lsImages[
-                                                  index]);
+                                                  .report.lsImages[index]);
                                         },
                                       )
-                                    : const Text(
-                                        "Keine Bilder vorhanden"),
+                                    : const Text("Keine Bilder vorhanden"),
                                 const SizedBox(height: 10),
                                 Button(
-                                  onPressed: () => viewModel
-                                      .addImage(context),
+                                  onPressed: () => viewModel.addImage(context),
                                   text: "Neues Bild",
                                 ),
                               ],
                             )
                           : Center(
                               child: Button(
-                                  onPressed:
-                                      viewModel.downloadImages,
+                                  onPressed: viewModel.downloadImages,
                                   text:
                                       "Bilder herunterladen (${viewModel.report.lsImages.length})"),
                             ),
