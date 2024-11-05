@@ -49,14 +49,15 @@ class DefectReportDetailPage extends ConsumerWidget {
             ],
           ),
         ),
-        floatingActionButton: Button(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             if (formKey.currentState!.validate()) {
               formKey.currentState!.save();
               Navigator.of(context).pop(viewModel.report);
             }
           },
-          text: index == null ? "Erstellen" : "Änderungen speicherm",
+          icon: const Icon(Icons.save),
+          label: Text(index == null ? "Erstellen" : "Änderungen speicherm"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(4.0),
