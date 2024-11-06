@@ -3,6 +3,7 @@ import 'package:firereport/notifier/defectreportdetail_notifier.dart';
 import 'package:firereport/notifier/notifier.dart';
 import 'package:firereport/utils/controls.dart';
 import 'package:firereport/utils/formatter.dart';
+import 'package:firereport/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,26 +59,21 @@ class DefectReportDetailPage extends ConsumerWidget {
           },
           child: const Icon(Icons.save),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    // First Tab: Eigenschaften (Properties)
-                    TabProperties(
-                        formKey: formKey,
-                        viewModel: viewModel,
-                        userItems: userItems,
-                        createdUser: createdUser),
-                    // Second Tab: Bilder (Images)
-                    TabImages(viewModel: viewModel),
-                  ],
-                ),
+        body: Column(
+          children: [
+            Expanded(
+              child: TabBarView(
+                children: [
+                  TabProperties(
+                      formKey: formKey,
+                      viewModel: viewModel,
+                      userItems: userItems,
+                      createdUser: createdUser),
+                  TabImages(viewModel: viewModel),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -105,77 +101,71 @@ class TabProperties extends StatelessWidget {
         key: formKey,
         child: Column(
           children: [
-            Card(
-              color: Theme.of(context).colorScheme.secondary,
-              elevation: 2,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          initialValue: viewModel.report.title,
-                          decoration: const InputDecoration(
-                            labelText: "Titel",
-                          ),
-                          onSaved: (value) {
-                            viewModel.report.title = value!;
-                          },
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Bitte einen Titel eingeben';
-                            }
-                            return null;
-                          },
-                        ),
-                        TextFormField(
-                          initialValue: viewModel.report.description,
-                          decoration:
-                              const InputDecoration(labelText: "Beschreibung"),
-                          onSaved: (value) {
-                            viewModel.report.description = value!;
-                          },
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Bitte eine Beschreibung eingeben';
-                            }
-                            return null;
-                          },
-                          maxLines: 5,
-                          minLines: 3,
-                          keyboardType: TextInputType.multiline,
-                        ),
-                        DropdownStatus(report: viewModel.report),
-                        const SizedBox(height: 10),
-                        DropdownUser(
-                            userItems: userItems, report: viewModel.report),
-                        const SizedBox(height: 10),
-                        ListTile(
-                          title: Text(viewModel.report.dueDate == null
-                              ? 'Bitte Fälligkeitsdatum auswählen'
-                              : 'Datum: ${formatDate(viewModel.report.dueDate!.toLocal())}'),
-                          trailing: const Icon(Icons.calendar_today),
-                          onTap: () => viewModel.selectDueDate(context),
-                        ),
-                        const SizedBox(height: 10),
-                        SwitchListTile(
-                            title: const Text(
-                                "Benachrichtige mich bei Änderungen"),
-                            value: viewModel.report.isNotifyUser,
-                            onChanged: (value) {
-                              viewModel.setNotifyUser(value);
-                            }),
-                      ],
-                    ),
-                  ),
-                ],
+            ListTile(
+              leading: const SizedBox(), // Icon auf der linken Seite
+              title: TextFormField(
+                initialValue: viewModel.report.title,
+                decoration: defaultInputDecoration("Titel"),
+                onSaved: (value) {
+                  viewModel.report.title = value!;
+                },
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Bitte einen Titel eingeben';
+                  }
+                  return null;
+                },
               ),
             ),
+            ListTile(
+              leading: const Icon(Icons.edit_document),
+              title: TextFormField(
+                initialValue: viewModel.report.description,
+                decoration: defaultInputDecoration("Beschreibung"),
+                onSaved: (value) {
+                  viewModel.report.description = value!;
+                },
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Bitte eine Beschreibung eingeben';
+                  }
+                  return null;
+                },
+                minLines: 1,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+              ),
+            ),
+            const Divider(color: Colors.grey),
+            ListTile(
+              leading: const SizedBox(),
+              title: DropdownStatus(report: viewModel.report),
+            ),
+            ListTile(
+              leading: const SizedBox(),
+              title:
+                  DropdownUser(userItems: userItems, report: viewModel.report),
+            ),
+            const Divider(color: Colors.grey),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: Text(viewModel.report.dueDate == null
+                  ? 'Bitte Fälligkeitsdatum auswählen'
+                  : 'Fälligkeitsdatum: ${formatDate(viewModel.report.dueDate!.toLocal())}'),
+              onTap: () => viewModel.selectDueDate(context),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.notifications),
+              title: const Text("Benachrichtige mich bei Änderungen"),
+              value: viewModel.report.isNotifyUser,
+              onChanged: (value) {
+                viewModel.setNotifyUser(value);
+              },
+            ),
+            const SizedBox(height: 20),
             if (createdUser != null)
               Text(
-                  "Erstellt von: ${createdUser?.firstName} ${createdUser?.lastName}"),
-            const SizedBox(height: 20),
+                  "Bericht erstellt von: ${createdUser?.firstName} ${createdUser?.lastName}"),
           ],
         ),
       ),
@@ -271,12 +261,7 @@ class DropdownStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<ReportState>(
       value: report.status,
-      decoration: InputDecoration(
-        labelText: "Status",
-        labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-        focusedBorder: InputBorder.none,
-        border: InputBorder.none,
-      ),
+      decoration: defaultInputDecoration("Status"),
       items: ReportState.values.map((status) {
         return DropdownMenuItem(
             value: status, child: Text(formatReportState(status)));
@@ -300,12 +285,7 @@ class DropdownUser extends StatelessWidget {
     return DropdownButtonFormField<AppUserModel>(
       value:
           userItems.where((user) => user.id == report.assignedUser).firstOrNull,
-      decoration: InputDecoration(
-        labelText: "Zugewiesener Benutzer",
-        labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-        focusedBorder: InputBorder.none,
-        border: InputBorder.none,
-      ),
+      decoration: defaultInputDecoration("Zugewiesener Benutzer"),
       items: userItems.map((user) {
         return DropdownMenuItem(
             value: user, child: Text('${user.firstName} ${user.lastName}'));

@@ -33,3 +33,13 @@ ThemeData darkTheme = ThemeData(
     inverseSurface: Color(0xFF3E3E40),
   ),
 );
+
+InputDecoration defaultInputDecoration(String labelText) {
+  return InputDecoration(
+      labelText: labelText,
+      labelStyle: const TextStyle(color: Colors.grey),
+      focusedBorder: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      errorBorder: InputBorder.none,
+      focusedErrorBorder: InputBorder.none);
+}
