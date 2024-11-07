@@ -13,7 +13,7 @@ ThemeData lightTheme = ThemeData(
     surface: Color(0xFFF3F3F3),
     onSurface: Color(0xFF191919),
     inversePrimary: Color(0xFFFFFFFF),
-    inverseSurface: Color(0xFF191919),
+    inverseSurface: Color(0xFF9E9E9E),
   ),
 );
 
@@ -28,16 +28,16 @@ ThemeData darkTheme = ThemeData(
     error: Color(0xFFCF1C34),
     onError: Color(0xFFFFFFFF),
     surface: Color(0xFF222222),
-    onSurface: Color(0xFFFFFFFF),
+    onSurface: Color(0xFFF3F3F3),
     inversePrimary: Color(0xFFF3F3F3),
-    inverseSurface: Color(0xFF3E3E40),
+    inverseSurface: Color(0xFF9E9E9E),
   ),
 );
 
 InputDecoration defaultInputDecoration(String labelText) {
   return InputDecoration(
       labelText: labelText,
-      labelStyle: const TextStyle(color: Colors.grey),
+      labelStyle: const TextStyle(color: Color(0xFF9E9E9E)),
       focusedBorder: InputBorder.none,
       enabledBorder: InputBorder.none,
       errorBorder: InputBorder.none,

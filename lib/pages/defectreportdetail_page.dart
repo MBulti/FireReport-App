@@ -32,56 +32,31 @@ class DefectReportDetailPage extends ConsumerWidget {
         .where((user) => user.id == viewModel.report.createdBy)
         .firstOrNull;
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(index == null
-              ? 'Neuer Mängelbericht'
-              : 'Mängelbericht bearbeiten'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(
-                text: "Eigenschaften",
-              ),
-              Tab(
-                text: "Bilder",
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (formKey.currentState!.validate()) {
-              formKey.currentState!.save();
-              Navigator.of(context).pop(viewModel.report);
-            }
-          },
-          child: const Icon(Icons.save),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: TabBarView(
-                children: [
-                  TabProperties(
-                      formKey: formKey,
-                      viewModel: viewModel,
-                      userItems: userItems,
-                      createdUser: createdUser),
-                  TabImages(viewModel: viewModel),
-                ],
-              ),
-            ),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+            index == null ? 'Neuer Mängelbericht' : 'Mängelbericht bearbeiten'),
+      ),
+      body: DetailForm(
+          formKey: formKey,
+          viewModel: viewModel,
+          userItems: userItems,
+          createdUser: createdUser),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (formKey.currentState!.validate()) {
+            formKey.currentState!.save();
+            Navigator.of(context).pop(viewModel.report);
+          }
+        },
+        child: const Icon(Icons.save),
       ),
     );
   }
 }
 
-class TabProperties extends StatelessWidget {
-  const TabProperties({
+class DetailForm extends StatelessWidget {
+  const DetailForm({
     super.key,
     required this.formKey,
     required this.viewModel,
@@ -102,7 +77,7 @@ class TabProperties extends StatelessWidget {
         child: Column(
           children: [
             ListTile(
-              leading: const SizedBox(), // Icon auf der linken Seite
+              leading: const SizedBox(),
               title: TextFormField(
                 initialValue: viewModel.report.title,
                 decoration: defaultInputDecoration("Titel"),
@@ -118,7 +93,7 @@ class TabProperties extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.edit_document),
+              leading: const DefaultIcon(icon: Icons.edit_document),
               title: TextFormField(
                 initialValue: viewModel.report.description,
                 decoration: defaultInputDecoration("Beschreibung"),
@@ -136,7 +111,7 @@ class TabProperties extends StatelessWidget {
                 keyboardType: TextInputType.multiline,
               ),
             ),
-            const Divider(color: Colors.grey),
+            const DefaultDivider(),
             ListTile(
               leading: const SizedBox(),
               title: DropdownStatus(report: viewModel.report),
@@ -146,26 +121,52 @@ class TabProperties extends StatelessWidget {
               title:
                   DropdownUser(userItems: userItems, report: viewModel.report),
             ),
-            const Divider(color: Colors.grey),
+            const DefaultDivider(),
             ListTile(
-              leading: const Icon(Icons.calendar_today),
+              leading: const DefaultIcon(icon: Icons.calendar_month),
               title: Text(viewModel.report.dueDate == null
                   ? 'Bitte Fälligkeitsdatum auswählen'
                   : 'Fälligkeitsdatum: ${formatDate(viewModel.report.dueDate!.toLocal())}'),
               onTap: () => viewModel.selectDueDate(context),
             ),
             SwitchListTile(
-              secondary: const Icon(Icons.notifications),
+              secondary: const DefaultIcon(icon: Icons.notifications),
               title: const Text("Benachrichtige mich bei Änderungen"),
               value: viewModel.report.isNotifyUser,
               onChanged: (value) {
                 viewModel.setNotifyUser(value);
               },
             ),
-            const SizedBox(height: 20),
+            const DefaultDivider(),
             if (createdUser != null)
-              Text(
-                  "Bericht erstellt von: ${createdUser?.firstName} ${createdUser?.lastName}"),
+              ListTile(
+                leading: const DefaultIcon(icon: Icons.person_add),
+                title: Text(
+                  "Ersteller: ${createdUser?.firstName} ${createdUser?.lastName}",
+                ),
+              ),
+            const DefaultDivider(),
+            viewModel.isImagesFetched
+                ? ListTile(
+                    leading: const DefaultIcon(icon: Icons.attachment),
+                    title: const Text("Neues Bild hinzufügen"),
+                    trailing: const DefaultIcon(icon: Icons.add),
+                    onTap: () => viewModel.addImage(context),
+                  )
+                : ListTile(
+                    leading: const DefaultIcon(icon: Icons.attachment),
+                    title: Text(
+                        "Anhänge herunterladen (${viewModel.report.lsImages.length})"),
+                    trailing: const DefaultIcon(icon: Icons.download),
+                    onTap: () => viewModel.downloadImages(),
+                  ),
+            ListTile(
+              leading: const SizedBox(),
+              title: ReportAttachement(viewModel: viewModel),
+            ),
+            const SizedBox(
+              height: 50,
+            )
           ],
         ),
       ),
@@ -173,8 +174,8 @@ class TabProperties extends StatelessWidget {
   }
 }
 
-class TabImages extends StatelessWidget {
-  const TabImages({
+class ReportAttachement extends StatelessWidget {
+  const ReportAttachement({
     super.key,
     required this.viewModel,
   });
@@ -183,72 +184,43 @@ class TabImages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Card(
-            color: Theme.of(context).colorScheme.secondary,
-            elevation: 2,
+    return viewModel.isLoadImagesInProgress
+        ? const Center(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: viewModel.isLoadImagesInProgress
-                      ? const Center(
-                          child: Column(
-                            children: [
-                              CircularProgressIndicator(),
-                              SizedBox(height: 20),
-                              Text("Bilder werden geladen..."),
-                            ],
-                          ),
-                        )
-                      : viewModel.isImagesFetched
-                          ? Column(
-                              children: [
-                                viewModel.report.lsImages
-                                        .where((x) => x.imageBytes != null)
-                                        .isNotEmpty
-                                    ? GridView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          mainAxisSpacing: 4.0,
-                                          crossAxisSpacing: 4.0,
-                                          childAspectRatio: 1.0,
-                                        ),
-                                        itemCount:
-                                            viewModel.report.lsImages.length,
-                                        itemBuilder: (context, index) {
-                                          return ReportImage(
-                                              imageModel: viewModel
-                                                  .report.lsImages[index]);
-                                        },
-                                      )
-                                    : const Text("Keine Bilder vorhanden"),
-                                const SizedBox(height: 10),
-                                Button(
-                                  onPressed: () => viewModel.addImage(context),
-                                  text: "Neues Bild",
-                                ),
-                              ],
-                            )
-                          : Center(
-                              child: Button(
-                                  onPressed: viewModel.downloadImages,
-                                  text:
-                                      "Bilder herunterladen (${viewModel.report.lsImages.length})"),
-                            ),
-                )
+                CircularProgressIndicator(),
+                SizedBox(height: 10),
+                Text("Bilder werden geladen..."),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          )
+        : viewModel.isImagesFetched
+            ? Column(
+                children: [
+                  viewModel.report.lsImages
+                          .where((x) => x.imageBytes != null)
+                          .isNotEmpty
+                      ? GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 4.0,
+                            crossAxisSpacing: 4.0,
+                            childAspectRatio: 1.0,
+                          ),
+                          itemCount: viewModel.report.lsImages.length,
+                          itemBuilder: (context, index) {
+                            return ReportImage(
+                              imageModel: viewModel.report.lsImages[index],
+                            );
+                          },
+                        )
+                      : const Text("Keine Bilder vorhanden"),
+                ],
+              )
+            : const SizedBox();
   }
 }
 
