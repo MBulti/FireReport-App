@@ -29,40 +29,52 @@ class SettingsPage extends ConsumerWidget {
         child: Column(
           children: [
             SwitchListTile(
+                secondary: const Icon(Icons.color_lens),
                 title: const Text('Dunkles Thema'),
                 value: ref.watch(themeProvider) == ThemeMode.dark,
                 onChanged: (value) {
                   ref.read(themeProvider.notifier).toggleTheme();
                 }),
-            const Icon(Icons.person, size: 38),
-            Text(appUser.firstName),
-            Text(appUser.lastName),
-            const Spacer(),
-            InvertedButton(
-              onPressed: () {
+            const DefaultDivider(),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: Text(appUser.lastName),
+              subtitle: Text(appUser.firstName),
+            ),
+            ListTile(
+              leading: const SizedBox(),
+              title: const Text("Ausloggen"),
+              trailing: const Icon(Icons.logout),
+              onTap: () {
                 ref.read(authProvider.notifier).logout();
               },
-              text: "Ausloggen",
             ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            const Spacer(),
+            AboutListTile(
+              icon: const Icon(Icons.info),
+              applicationVersion: ref.watch(appVersionProvider).when(
+                    data: (data) => data,
+                    loading: () => "",
+                    error: (err, stack) => "",
+                  ),
+              applicationLegalese:
+                  "© 2024 Moritz Bulthaup. Alle Rechte vorbehalten.",
+              aboutBoxChildren: [
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip),
+                  title: const Text("Datenschutzerklärung"),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const PrivacyPolicyPage())),
-              child: const Text("Datenschutzerklärung"),
-            ),
-            GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ImprintPage())),
-              child: const Text("Impressum"),
-            ),
-            const SizedBox(height: 10),
-            ref.watch(appVersionProvider).when(
-                  data: (data) => Text(data),
-                  loading: () => const SizedBox.shrink(),
-                  error: (err, stack) => const SizedBox.shrink(),
                 ),
-            const Text("© 2024 Moritz Bulthaup. Alle Rechte vorbehalten."),
-            const SizedBox(height: 50)
+                ListTile(
+                  leading: const Icon(Icons.info),
+                  title: const Text("Impressum"),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ImprintPage())),
+                )
+              ],
+            ),
+            const SizedBox(height: 80),
           ],
         ),
       ),
