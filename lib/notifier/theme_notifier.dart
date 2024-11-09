@@ -9,7 +9,7 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
 
   Future<void> _loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeIndex = prefs.getInt('themeMode') ?? ThemeMode.light.index;
+    final themeIndex = prefs.getInt('themeMode') ?? ThemeMode.dark.index;
     state = ThemeMode.values[themeIndex];
   }
 

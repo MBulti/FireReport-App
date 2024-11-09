@@ -19,6 +19,27 @@ class DefectReportDetailPage extends ConsumerWidget {
     this.index,
   });
 
+  Future<bool> _showExitConfirmationDialog(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Wirklich verlassen?"),
+        content: const Text("Die Änderungen gehen verloren!"),
+        actions: [
+          TextButton(
+            child: const Text('Ja'),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+          TextButton(
+            child: const Text('Nein'),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(defectReportDetailProvider(report));
@@ -32,24 +53,40 @@ class DefectReportDetailPage extends ConsumerWidget {
         .where((user) => user.id == viewModel.report.createdBy)
         .firstOrNull;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-            index == null ? 'Neuer Mängelbericht' : 'Mängelbericht bearbeiten'),
-      ),
-      body: DetailForm(
-          formKey: formKey,
-          viewModel: viewModel,
-          userItems: userItems,
-          createdUser: createdUser),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (formKey.currentState!.validate()) {
-            formKey.currentState!.save();
-            Navigator.of(context).pop(viewModel.report);
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        final navigator = Navigator.of(context);
+        if (!didPop) {
+          if (viewModel.isReportChanged()) {
+            final shouldExit = await _showExitConfirmationDialog(context);
+            if (!shouldExit) return;
           }
-        },
-        child: const Icon(Icons.save),
+          navigator.pop(result);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(index == null
+              ? 'Neuer Mängelbericht'
+              : 'Mängelbericht bearbeiten'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.save),
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  formKey.currentState!.save();
+                  Navigator.of(context).pop(viewModel.report);
+                }
+              },
+            ),
+          ],
+        ),
+        body: DetailForm(
+            formKey: formKey,
+            viewModel: viewModel,
+            userItems: userItems,
+            createdUser: createdUser),
       ),
     );
   }
@@ -81,9 +118,10 @@ class DetailForm extends StatelessWidget {
               title: TextFormField(
                 initialValue: viewModel.report.title,
                 decoration: defaultInputDecoration("Titel"),
-                onSaved: (value) {
-                  viewModel.report.title = value!;
-                },
+                onChanged: (value) => viewModel.report.title = value,
+                // onSaved: (value) {
+                //   viewModel.report.title = value!;
+                // },
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Bitte einen Titel eingeben';
@@ -97,9 +135,10 @@ class DetailForm extends StatelessWidget {
               title: TextFormField(
                 initialValue: viewModel.report.description,
                 decoration: defaultInputDecoration("Beschreibung"),
-                onSaved: (value) {
-                  viewModel.report.description = value!;
-                },
+                onChanged: (value) => viewModel.report.description = value,
+                // onSaved: (value) {
+                //   viewModel.report.description = value!;
+                // },
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Bitte eine Beschreibung eingeben';

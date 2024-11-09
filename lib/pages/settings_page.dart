@@ -51,7 +51,7 @@ class SettingsPage extends ConsumerWidget {
             ),
             const Spacer(),
             AboutListTile(
-              icon: const Icon(Icons.info),
+              icon: const Icon(Icons.privacy_tip),
               applicationVersion: ref.watch(appVersionProvider).when(
                     data: (data) => data,
                     loading: () => "",
@@ -61,13 +61,11 @@ class SettingsPage extends ConsumerWidget {
                   "© 2024 Moritz Bulthaup. Alle Rechte vorbehalten.",
               aboutBoxChildren: [
                 ListTile(
-                  leading: const Icon(Icons.privacy_tip),
                   title: const Text("Datenschutzerklärung"),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const PrivacyPolicyPage())),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.info),
                   title: const Text("Impressum"),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ImprintPage())),

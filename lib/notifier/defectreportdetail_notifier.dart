@@ -7,6 +7,7 @@ import 'notifier.dart';
 
 class DefectReportDetailNotifier extends ChangeNotifier {
   final DefectReportService defectReportService;
+  final DefectReportModel? oldReport;
   late DefectReportModel _report;
   late DateTime firstDate;
   bool isLoadImagesInProgress = false;
@@ -19,9 +20,9 @@ class DefectReportDetailNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  DefectReportDetailNotifier(this.defectReportService, DefectReportModel? report, String? user) {
-    _report = report != null
-        ? report.copyWith()
+  DefectReportDetailNotifier(this.defectReportService, this.oldReport, String? user) {
+    _report = oldReport != null
+        ? oldReport!.copyWith()
         : DefectReportModel(
             id: DateTime.now().millisecondsSinceEpoch,
             title: "",
@@ -36,6 +37,30 @@ class DefectReportDetailNotifier extends ChangeNotifier {
       firstDate = DateTime.now();
     }
   }
+
+  bool isReportChanged() {
+  if (oldReport == null) {
+    return true; // no old report, its always changed
+  }
+  if (oldReport!.title != _report.title) return true;
+  if (oldReport!.description != _report.description) return true;
+  if (oldReport!.status != _report.status) return true;
+  if (oldReport!.dueDate != _report.dueDate) return true;
+  if (oldReport!.isNotifyUser != _report.isNotifyUser) return true;
+  if (oldReport!.createdBy != _report.createdBy) return true;
+
+  if (oldReport!.lsImages.length != _report.lsImages.length) return true;
+  for (int i = 0; i < oldReport!.lsImages.length; i++) {
+    final oldImage = oldReport!.lsImages[i];
+    final newImage = _report.lsImages[i];
+    if (oldImage.id != newImage.id ||
+        oldImage.url != newImage.url ||
+        oldImage.imageBytes != newImage.imageBytes) {
+      return true;
+    }
+  }
+  return false;
+}
 
   Future<void> selectDueDate(BuildContext context) async {
     final selectedDate = await showDatePicker(
