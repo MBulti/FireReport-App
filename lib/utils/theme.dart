@@ -34,7 +34,7 @@ ThemeData darkTheme = ThemeData(
   ),
 );
 
-InputDecoration defaultInputDecoration(String labelText) {
+InputDecoration defaultInputDecoration([String? labelText]) {
   return InputDecoration(
       labelText: labelText,
       labelStyle: const TextStyle(color: Color(0xFF9E9E9E)),

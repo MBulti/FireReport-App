@@ -1,7 +1,7 @@
+import 'package:firereport/controls/default_control.dart';
 import 'package:firereport/models/models.dart';
 import 'package:firereport/notifier/defectreportdetail_notifier.dart';
 import 'package:firereport/notifier/notifier.dart';
-import 'package:firereport/utils/controls.dart';
 import 'package:firereport/utils/formatter.dart';
 import 'package:firereport/utils/theme.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +82,7 @@ class DefectReportDetailPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: DetailForm(
+        body: _DetailForm(
             formKey: formKey,
             viewModel: viewModel,
             userItems: userItems,
@@ -92,9 +92,8 @@ class DefectReportDetailPage extends ConsumerWidget {
   }
 }
 
-class DetailForm extends StatelessWidget {
-  const DetailForm({
-    super.key,
+class _DetailForm extends StatelessWidget {
+  const _DetailForm({
     required this.formKey,
     required this.viewModel,
     required this.userItems,
@@ -153,12 +152,12 @@ class DetailForm extends StatelessWidget {
             const DefaultDivider(),
             ListTile(
               leading: const SizedBox(),
-              title: DropdownStatus(report: viewModel.report),
+              title: _DropdownStatus(report: viewModel.report),
             ),
             ListTile(
               leading: const SizedBox(),
               title:
-                  DropdownUser(userItems: userItems, report: viewModel.report),
+                  _DropdownUser(userItems: userItems, report: viewModel.report),
             ),
             const DefaultDivider(),
             ListTile(
@@ -201,7 +200,7 @@ class DetailForm extends StatelessWidget {
                   ),
             ListTile(
               leading: const SizedBox(),
-              title: ReportAttachement(viewModel: viewModel),
+              title: _ReportAttachement(viewModel: viewModel),
             ),
             const SizedBox(
               height: 50,
@@ -213,9 +212,8 @@ class DetailForm extends StatelessWidget {
   }
 }
 
-class ReportAttachement extends StatelessWidget {
-  const ReportAttachement({
-    super.key,
+class _ReportAttachement extends StatelessWidget {
+  const _ReportAttachement({
     required this.viewModel,
   });
 
@@ -251,7 +249,7 @@ class ReportAttachement extends StatelessWidget {
                           ),
                           itemCount: viewModel.report.lsImages.length,
                           itemBuilder: (context, index) {
-                            return ReportImage(
+                            return _ReportImage(
                               imageModel: viewModel.report.lsImages[index],
                             );
                           },
@@ -263,10 +261,10 @@ class ReportAttachement extends StatelessWidget {
   }
 }
 
-class DropdownStatus extends StatelessWidget {
+class _DropdownStatus extends StatelessWidget {
   final DefectReportModel report;
 
-  const DropdownStatus({super.key, required this.report});
+  const _DropdownStatus({required this.report});
 
   @override
   Widget build(BuildContext context) {
@@ -284,12 +282,12 @@ class DropdownStatus extends StatelessWidget {
   }
 }
 
-class DropdownUser extends StatelessWidget {
+class _DropdownUser extends StatelessWidget {
   final List<AppUserModel> userItems;
   final DefectReportModel report;
 
-  const DropdownUser(
-      {super.key, required this.userItems, required this.report});
+  const _DropdownUser(
+      {required this.userItems, required this.report});
 
   @override
   Widget build(BuildContext context) {
@@ -308,16 +306,16 @@ class DropdownUser extends StatelessWidget {
   }
 }
 
-class ReportImage extends StatelessWidget {
+class _ReportImage extends StatelessWidget {
   final ImageModel imageModel;
-  const ReportImage({super.key, required this.imageModel});
+  const _ReportImage({required this.imageModel});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ImageFullScreenPage(imageModel: imageModel);
+          return _ImageFullScreenPage(imageModel: imageModel);
         }));
       },
       child: SizedBox(
@@ -332,8 +330,8 @@ class ReportImage extends StatelessWidget {
   }
 }
 
-class ImageFullScreenPage extends StatelessWidget {
-  const ImageFullScreenPage({super.key, required this.imageModel});
+class _ImageFullScreenPage extends StatelessWidget {
+  const _ImageFullScreenPage({required this.imageModel});
   final ImageModel imageModel;
 
   @override

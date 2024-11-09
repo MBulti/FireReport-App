@@ -24,13 +24,18 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
         title: 'FireReport',
+        locale: const Locale('de'),
+        supportedLocales: const [
+          Locale('de', ''),
+        ],
         debugShowCheckedModeBanner: false,
         theme: lightTheme,
         darkTheme: darkTheme,
         themeMode: ref.watch(themeProvider),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
         home: const SplashPage());
   }

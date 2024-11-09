@@ -34,3 +34,12 @@ String formatFilterState(FilterStatus status) {
       return "Alle";
   }
 }
+
+String formatRequestType(RequestType requestType) {
+  switch (requestType) {
+    case RequestType.normalUniform:
+      return "Dienstkleidung";
+    case RequestType.operationalUniform:
+      return "Einsatzkleidung";
+  }
+}

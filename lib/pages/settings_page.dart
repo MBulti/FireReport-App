@@ -1,6 +1,6 @@
+import 'package:firereport/controls/default_control.dart';
 import 'package:firereport/notifier/notifier.dart';
 import 'package:firereport/services/services.dart';
-import 'package:firereport/utils/controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'pages.dart';
