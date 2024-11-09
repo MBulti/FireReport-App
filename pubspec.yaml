@@ -1,7 +1,7 @@
 name: firereport
 description: "Project for managing defect reports and checklists"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 2024.11.07+1
+version: 2024.11.08+1
 
 environment:
   sdk: ^3.5.0

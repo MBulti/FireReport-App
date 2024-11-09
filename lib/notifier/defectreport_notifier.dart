@@ -59,8 +59,7 @@ final defectReportNotifierProvider =
 // Gefilterte Liste basierend auf dem FilterStatus
 final filteredDefectReportProvider = Provider<List<DefectReportModel>>((ref) {
   final filter = ref.watch(filterStatusProvider);
-  final defectReports = ref.watch(defectReportNotifierProvider
-      .select((notifier) => notifier.defectReports));
+  final defectReports = ref.watch(defectReportNotifierProvider).defectReports;
 
   var lsReports = defectReports;
   switch (filter) {
