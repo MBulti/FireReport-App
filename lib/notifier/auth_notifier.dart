@@ -42,8 +42,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await Future.delayed(const Duration(seconds: 1));
       await APIClient.login(userName, password);
       state = AuthState.authenticated;
-    } on AuthException {
+    } on AuthException catch (e) {
       state = AuthState.error;
+      await APIClient.addLog(e.toString());
     }
   }
 

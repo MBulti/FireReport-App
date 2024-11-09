@@ -88,11 +88,11 @@ class LoginPage extends ConsumerWidget {
                     ref.read(passwordController).text),
                 text: "Login",
               ),
-              const SizedBox(height: 10.0),
-              Button(
-                onPressed: ref.read(authProvider.notifier).guestLogin,
-                text: "Gast Login",
-              ),
+              // const SizedBox(height: 10.0),
+              // Button(
+              //   onPressed: ref.read(authProvider.notifier).guestLogin,
+              //   text: "Gast Login",
+              // ),
               const SizedBox(height: 24.0),
               Center(
                 child: SizedBox(
