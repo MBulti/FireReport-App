@@ -43,6 +43,14 @@ class APIClient {
     return await supabase.auth.signInAnonymously();
   }
 
+  static Future<void> changePassword(String newPassword) async {
+    await supabase.auth.updateUser(
+      UserAttributes(
+        password: newPassword,
+      )
+    );
+  }
+
   static Future<void> logout() async {
     return await supabase.auth.signOut();
   }

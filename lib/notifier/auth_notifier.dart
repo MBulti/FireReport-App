@@ -27,7 +27,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (Supabase.instance.client.auth.currentSession!.user.isAnonymous) {
         state = AuthState.anonymous;
       } else {
-        await APIClient.setCurrentUser(Supabase.instance.client.auth.currentUser!);
+        await APIClient.setCurrentUser(
+            Supabase.instance.client.auth.currentUser!);
         state = AuthState.authenticated;
       }
     } else {
@@ -68,6 +69,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = AuthState.unauthenticated;
     } on AuthException catch (e) {
       state = AuthState.error;
+      await APIClient.addLog(e.toString());
+    }
+  }
+
+  void changePassword(String newPassword) async {
+    try {
+      await APIClient.changePassword(newPassword);
+    } on AuthException catch (e) {
       await APIClient.addLog(e.toString());
     }
   }

@@ -1,6 +1,6 @@
 import 'package:firereport/controls/default_control.dart';
+import 'package:firereport/controls/listtile_control.dart';
 import 'package:firereport/notifier/notifier.dart';
-import 'package:firereport/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'pages.dart';
@@ -49,29 +49,9 @@ class SettingsPage extends ConsumerWidget {
                 ref.read(authProvider.notifier).logout();
               },
             ),
+            PasswordResetListTile(),
             const Spacer(),
-            AboutListTile(
-              icon: const Icon(Icons.privacy_tip),
-              applicationVersion: ref.watch(appVersionProvider).when(
-                    data: (data) => data,
-                    loading: () => "",
-                    error: (err, stack) => "",
-                  ),
-              applicationLegalese:
-                  "© 2024 Moritz Bulthaup. Alle Rechte vorbehalten.",
-              aboutBoxChildren: [
-                ListTile(
-                  title: const Text("Datenschutzerklärung"),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const PrivacyPolicyPage())),
-                ),
-                ListTile(
-                  title: const Text("Impressum"),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ImprintPage())),
-                )
-              ],
-            ),
+            const AboutAppListTile(),
             const SizedBox(height: 80),
           ],
         ),
