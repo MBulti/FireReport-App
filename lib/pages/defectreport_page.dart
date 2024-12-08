@@ -17,7 +17,7 @@ class DefectReportPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aktuelle Mängelberichte'),
+        title: const Text('FireReport'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
