@@ -20,7 +20,7 @@ class DefectReportDetailNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  DefectReportDetailNotifier(this.defectReportService, this.oldReport, String? user) {
+  DefectReportDetailNotifier(this.defectReportService, this.oldReport, AppUserModel? user) {
     _report = oldReport != null
         ? oldReport!.copyWith()
         : DefectReportModel(
@@ -29,10 +29,11 @@ class DefectReportDetailNotifier extends ChangeNotifier {
             description: "",
             status: ReportState.open,
             lsImages: [],
-            createdBy: user,
+            createdBy: user?.id,
+            assignedUnit: user != null ? user.unitType : UnitType.unset
           );
-    if (_report.dueDate != null && _report.dueDate!.isBefore(DateTime.now())) {
-      firstDate = _report.dueDate!;
+    if (_report.dtDue != null && _report.dtDue!.isBefore(DateTime.now())) {
+      firstDate = _report.dtDue!;
     } else {
       firstDate = DateTime.now();
     }
@@ -45,7 +46,7 @@ class DefectReportDetailNotifier extends ChangeNotifier {
   if (oldReport!.title != _report.title) return true;
   if (oldReport!.description != _report.description) return true;
   if (oldReport!.status != _report.status) return true;
-  if (oldReport!.dueDate != _report.dueDate) return true;
+  if (oldReport!.dtDue != _report.dtDue) return true;
   if (oldReport!.isNotifyUser != _report.isNotifyUser) return true;
   if (oldReport!.createdBy != _report.createdBy) return true;
 
@@ -65,13 +66,13 @@ class DefectReportDetailNotifier extends ChangeNotifier {
   Future<void> selectDueDate(BuildContext context) async {
     final selectedDate = await showDatePicker(
       context: context,
-      initialDate: _report.dueDate ?? DateTime.now(),
+      initialDate: _report.dtDue ?? DateTime.now(),
       firstDate: firstDate,
       lastDate: DateTime(2101),
       locale: const Locale('de', 'DE'),
     );
     if (selectedDate != null) {
-      _report.dueDate = selectedDate;
+      _report.dtDue = selectedDate;
       notifyListeners();
     }
   }
@@ -141,7 +142,7 @@ final defectReportDetailProvider = ChangeNotifierProvider.autoDispose
     .family<DefectReportDetailNotifier, DefectReportModel?>(
   (ref, report) {
     final defectReportService = ref.read(defectReportServiceProvider);
-    final user = ref.read(authProvider.notifier).user.id;
+    final user = ref.read(authProvider.notifier).user;
     return DefectReportDetailNotifier(defectReportService, report, user);
   },
 );

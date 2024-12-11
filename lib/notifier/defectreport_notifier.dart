@@ -32,11 +32,27 @@ class DefectReportNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> markReportAsRead(int reportId) async {
+    await ref
+        .read(defectReportServiceProvider)
+        .markReportNotificationAsRead(reportId);
+    final index = defectReports.indexWhere((element) => element.id == reportId);
+    if (index != -1) {
+      defectReports[index] = defectReports[index].copyWith(
+        isNew: false,
+      );
+    }
+    notifyListeners();
+  }
+
   Future<void> upsertReport(DefectReportModel report) async {
     try {
       isSaveInProgress = true;
       notifyListeners();
-      await ref.read(defectReportServiceProvider).upsertDefectReport(report);
+      await ref
+          .read(defectReportServiceProvider)
+          .upsertDefectReport(report, users);
+
       final index =
           defectReports.indexWhere((element) => element.id == report.id);
       if (index != -1) {
@@ -80,13 +96,20 @@ final filteredDefectReportProvider = Provider<List<DefectReportModel>>((ref) {
       break;
     case FilterStatus.assignedToMe:
       lsReports = defectReports
-          .where((report) => report.assignedUser == ref.read(authProvider.notifier).user.id)
+          .where((report) =>
+              report.assignedUser == ref.read(authProvider.notifier).user.id)
           .toList();
       break;
     case FilterStatus.createdByMe:
       lsReports = defectReports
-          .where((report) => report.createdBy == ref.read(authProvider.notifier).user.id)
+          .where((report) =>
+              report.createdBy == ref.read(authProvider.notifier).user.id)
           .toList();
+      break;
+    case FilterStatus.unread:
+    lsReports = defectReports
+        .where((report) => report.isNew)
+        .toList();
       break;
     case FilterStatus.all:
     default:
@@ -98,7 +121,7 @@ final filteredDefectReportProvider = Provider<List<DefectReportModel>>((ref) {
     if (statusComparison != 0) {
       return statusComparison;
     } else {
-      return a.dueDate.compareNullableTo(b.dueDate);
+      return a.dtDue.compareNullableTo(b.dtDue);
     }
   });
   return lsReports;

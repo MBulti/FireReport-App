@@ -44,11 +44,9 @@ class APIClient {
   }
 
   static Future<void> changePassword(String newPassword) async {
-    await supabase.auth.updateUser(
-      UserAttributes(
-        password: newPassword,
-      )
-    );
+    await supabase.auth.updateUser(UserAttributes(
+      password: newPassword,
+    ));
   }
 
   static Future<void> logout() async {
@@ -108,7 +106,6 @@ class APIClient {
   }
 
   static Future<void> upsertImage(ImageModel image) async {
-    image.dtLastModified = DateTime.now();
     await Supabase.instance.client
         .from(DbTables.tblImage)
         .upsert(image.toJson());
@@ -145,16 +142,23 @@ class APIClient {
         : null;
   }
 
-  static Future<void> addReportNotification(int reportId) async {
-    await Future.delayed(const Duration(seconds: 1));
+  static Future<void> updateReportNotifications(int reportId) async {
+    await supabase
+        .from(DbTables.tblUserReportNotification)
+        .update({'is_update': true})
+        .eq('report_id', reportId)
+        .not('user_id', 'eq', currentUser!.id!);
+  }
+
+  static Future<void> addReportNotification(
+      int reportId, String? userId) async {
     final notification = ReportNotificationModel(
-      userId: currentUser!.id!,
+      userId: userId ?? currentUser!.id!,
       reportId: reportId,
-      isUpdate: false,
     );
-    await supabase.from(DbTables.tblUserReportNotification).upsert(
-          notification.toJson(),
-        );
+    await supabase
+        .from(DbTables.tblUserReportNotification)
+        .upsert(notification.toJson());
   }
 
   static Future<void> deleteReportNotification(int reportId) async {
@@ -164,6 +168,23 @@ class APIClient {
         .delete()
         .eq('user_id', currentUser!.id!)
         .eq('report_id', reportId);
+  }
+
+  static Future<void> markReportNotificationAsRead(int reportId) async {
+    await supabase
+        .from(DbTables.tblUserReportNotification)
+        .update({'is_update': false})
+        .eq('user_id', currentUser!.id!)
+        .eq('report_id', reportId);
+
+    // var notification = await getReportNotification(currentUser!.id!, reportId);
+    // if (notification != null) {
+    //   await supabase
+    //       .from(DbTables.tblUserReportNotification)
+    //       .update({'is_update': false})
+    //       .eq('user_id', currentUser!.id!)
+    //       .eq('report_id', reportId);
+    // }
   }
   // #endregion
 }

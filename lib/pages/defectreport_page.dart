@@ -17,7 +17,8 @@ class DefectReportPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FireReport'),
+        title: const Text('FireReport (Test)'),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -57,7 +58,7 @@ class ExpandedFloatingActionButton extends ConsumerWidget {
           icon: const Icon(Icons.checklist),
           label: "Neuer Antrag",
           onPressed: () async {
-            var newRequest = await Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => const RequestDetailPage(),
@@ -142,6 +143,7 @@ class DefectReportBody extends ConsumerWidget {
 
                           return GestureDetector(
                             onTap: () async {
+                              ref.read(defectReportNotifierProvider.notifier).markReportAsRead(report.id);
                               var updatedReport = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -205,7 +207,7 @@ class DefectReportListItem extends StatelessWidget {
                   Text('Status: ${formatReportState(report.status)}',
                       style: TextStyle(color: textColor)),
                   Text(
-                      'Fällig am: ${report.dueDate != null ? formatDate(report.dueDate!.toLocal()) : 'Kein Datum'}',
+                      'Fällig am: ${report.dtDue != null ? formatDate(report.dtDue!.toLocal()) : 'Kein Datum'}',
                       style: TextStyle(color: textColor)),
                 ],
               ),

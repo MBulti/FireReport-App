@@ -162,9 +162,9 @@ class _DetailForm extends StatelessWidget {
             const DefaultDivider(),
             ListTile(
               leading: const DefaultIcon(icon: Icons.calendar_month),
-              title: Text(viewModel.report.dueDate == null
+              title: Text(viewModel.report.dtDue == null
                   ? 'Bitte Fälligkeitsdatum auswählen'
-                  : 'Fälligkeitsdatum: ${formatDate(viewModel.report.dueDate!.toLocal())}'),
+                  : 'Fälligkeitsdatum: ${formatDate(viewModel.report.dtDue!.toLocal())}'),
               onTap: () => viewModel.selectDueDate(context),
             ),
             SwitchListTile(

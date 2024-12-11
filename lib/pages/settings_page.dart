@@ -1,6 +1,8 @@
 import 'package:firereport/controls/default_control.dart';
 import 'package:firereport/controls/listtile_control.dart';
+import 'package:firereport/models/enums.dart';
 import 'package:firereport/notifier/notifier.dart';
+import 'package:firereport/utils/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'pages.dart';
@@ -41,6 +43,12 @@ class SettingsPage extends ConsumerWidget {
               title: Text(appUser.lastName),
               subtitle: Text(appUser.firstName),
             ),
+            ListTile(
+              leading: const Icon(Icons.account_box),
+              title: Text(formatRoleType(appUser.roleType, appUser.unitType! == UnitType.kilver)),
+              subtitle: Text(formatUnitType(appUser.unitType)),
+            ),
+            const DefaultDivider(),
             ListTile(
               leading: const SizedBox(),
               title: const Text("Ausloggen"),

@@ -7,7 +7,9 @@ class DefectReportModel {
   ReportState status;
   String? assignedUser;
   String? createdBy;
-  DateTime? dueDate;
+  DateTime? dtDue;
+  DateTime? dtLastModified;
+  UnitType? assignedUnit;
   bool isNotifyUser;
   bool isNew;
   List<ImageModel> lsImages = [];
@@ -19,7 +21,9 @@ class DefectReportModel {
     required this.status,
     this.assignedUser,
     this.createdBy,
-    this.dueDate,
+    this.dtDue,
+    this.dtLastModified,
+    this.assignedUnit,
     this.isNotifyUser = false,
     this.isNew = false,
     this.lsImages = const [],
@@ -31,9 +35,11 @@ class DefectReportModel {
       title: json['title'],
       description: json['description'],
       status: json['status'] != null ? ReportState.values[json['status']] : ReportState.open,
-      dueDate: json['dt_due'] != null ? DateTime.parse(json['dt_due']) : null,
+      dtDue: json['dt_due'] != null ? DateTime.parse(json['dt_due']) : null,
+      dtLastModified: json['dt_lastmodified'] != null ? DateTime.parse(json['dt_lastmodified']) : null,
       assignedUser: json['assigned_user'],
       createdBy: json['created_by'],
+      assignedUnit: json['assigned_unit'] != null ? UnitType.values[json['assigned_unit']] : UnitType.unset,
     );
   }
 
@@ -43,9 +49,11 @@ class DefectReportModel {
       'title': title,
       'description': description,
       'status': status.index,
-      'dt_due': dueDate?.toIso8601String(),
+      'dt_due': dtDue?.toIso8601String(),
+      'dt_lastmodified': dtLastModified?.toIso8601String(),
       'assigned_user': assignedUser,
-      'created_by': createdBy
+      'created_by': createdBy,
+      'assigned_unit': assignedUnit?.index
     };
   }
 
@@ -57,7 +65,8 @@ class DefectReportModel {
     ReportState? status,
     String? assignedUser,
     String? createdBy,
-    DateTime? dueDate,
+    DateTime? dtDue,
+    UnitType? assignedUnit,
     bool? isNotifyUser,
     bool? isNew,
     List<ImageModel>? lsImages
@@ -69,7 +78,8 @@ class DefectReportModel {
       status: status ?? this.status,
       assignedUser: assignedUser ?? this.assignedUser,
       createdBy: createdBy ?? this.createdBy,
-      dueDate: dueDate ?? this.dueDate,
+      dtDue: dtDue ?? this.dtDue,
+      assignedUnit: assignedUnit ?? this.assignedUnit,
       isNotifyUser: isNotifyUser ?? this.isNotifyUser,
       isNew: isNew ?? this.isNew,
       lsImages: lsImages ?? copyWithImages(this.lsImages),
